@@ -1,9 +1,9 @@
 package XML::RSS::Headline::PerlJobs;
 use strict;
+use warnings;
 use base qw(XML::RSS::Headline);
-use vars qw($VERSION);
 
-$VERSION = 2.02;
+our $VERSION = 2.03;
 
 =head1 NAME
 

@@ -1,9 +1,10 @@
 package XML::RSS::Headline::Fark;
 use strict;
+use warnings;
 use base qw(XML::RSS::Headline);
-use vars qw($VERSION);
+use URI::Escape qw(uri_unescape);
 
-$VERSION = 2.02;
+our $VERSION = 2.03;
 
 =head1 NAME
 
@@ -63,7 +64,7 @@ sub item {
     my $url = $self->url;
     my $stripit = qr/http\:\/\/go\.fark\.com\/cgi\/fark\/go\.pl\?IDLink\=\d+\&location\=/;
     $url =~ s/$stripit//;
-    $self->url($url);
+    $self->url(uri_unescape($url));
 }
 
 =head1 AUTHOR

@@ -1,5 +1,12 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+2.03
+	- Needed to use URI::Escape qw(uri_unescape) on XML::RSS::Headline::Fark
+	  URLs.
+	- fixed the t/019_fark.t test to match correctly decoded URL
+	- simple change of use vars qw($VERSION); to our $VERSION in 
+	  XML::RSS::Headline::PerlJobs and XML::RSS::Headline::Fark
+
 2.02
 	- Fixed decode_entities to actually work (added tests to verify)
 	- added XML::RSS::Headline::Fark subclass

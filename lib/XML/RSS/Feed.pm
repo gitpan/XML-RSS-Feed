@@ -1,11 +1,12 @@
 package XML::RSS::Feed;
 use strict;
+use warnings;
 use XML::RSS;
 use XML::RSS::Headline;
 use Time::HiRes;
 use Storable qw(store retrieve);
 
-our $VERSION = 2.02;
+our $VERSION = 2.03;
 
 =head1 NAME
 

@@ -19,7 +19,7 @@ is($headline->headline,
     q|Netscape intern editing CNN names pic of GWB "a$$hole.jpg" -- unemployment ensues|,
     "Fark headline matched");
 is($headline->url,
-    q|http://www.worldnetdaily.com/news/article.asp%3FARTICLE_ID=41291|,
+    q|http://www.worldnetdaily.com/news/article.asp?ARTICLE_ID=41291|,
     "Fark url matched");
 
 sub xml {

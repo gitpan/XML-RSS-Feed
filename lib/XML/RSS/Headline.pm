@@ -1,5 +1,6 @@
 package XML::RSS::Headline;
 use strict;
+use warnings;
 use Digest::MD5 qw(md5_base64);
 use Encode qw(encode_utf8);
 use URI;
@@ -7,7 +8,7 @@ use Time::HiRes;
 use HTML::Entities;
 use constant DESCRIPTION_HEADLINE => 45; # length of headline when from description
 
-our $VERSION = 2.02;
+our $VERSION = 2.03;
 
 =head1 NAME
 
