@@ -1,30 +1,22 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
+use Test::More tests => 105;
 
-use Test::More tests => 107;
-
-BEGIN { 
-    use_ok( 'XML::RSS::Feed', 'loaded XML::RSS::Feed' );
-    use_ok( 'XML::RSS::Headline', 'loaded XML::RSS::Headline'  );
-}
+BEGIN { use_ok( 'XML::RSS::Feed') }
 
 my $max_headlines = 5;
 my $iterations = 100;
-my $title    = "This is a test 1";
-my $url      = "http://www.jbisbee.com/test/url/1";
+my $title = "This is a test 1";
+my $url = "http://www.jbisbee.com/test/url/1";
 cmp_ok($max_headlines, "<", $iterations, "Max headlines must be less than iterations");
 
 my $feed = XML::RSS::Feed->new (
-    url  => "http://www.jbisbee.com/rdf/",
-    name => 'jbisbee',
+    url           => "http://www.jbisbee.com/rdf/",
+    name          => 'jbisbee',
     max_headlines => $max_headlines,
 );
 isa_ok ($feed, 'XML::RSS::Feed');
-
-my $headline = XML::RSS::Headline->new(
-    url      => "http://www.jbisbee.com/testurl/1",
-    headline => "Test Headline",
-);
-isa_ok ($headline, 'XML::RSS::Headline');
 
 $feed->pre_process();
 

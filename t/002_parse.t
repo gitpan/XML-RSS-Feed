@@ -1,25 +1,39 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
+use Test::More tests => 10;
 
-use Test::More tests => 8;
-
-BEGIN { 
-    use_ok( 'XML::RSS::Feed', 'loaded XML::RSS::Feed' );
-    use_ok( 'XML::RSS::Headline', 'loaded XML::RSS::Headline'  );
-}
+BEGIN { use_ok('XML::RSS::Feed') }
 
 my $feed = XML::RSS::Feed->new (
-    url  => "http://www.jbisbee.com/rdf/",
-    name => 'jbisbee',
+    url   => "http://www.jbisbee.com/rdf/",
+    name  => 'jbisbee',
 );
+
 isa_ok ($feed, 'XML::RSS::Feed');
 
-my $headline = XML::RSS::Headline->new(
-    url      => "http://www.jbisbee.com/testurl/1",
-    headline => "Test Headline",
-);
-isa_ok ($headline, 'XML::RSS::Headline');
+$feed->parse(xml(1));
 
-my $slashdot_rss1 = qq|<?xml version="1.0" encoding="ISO-8859-1"?>
+cmp_ok($feed->num_headlines, '==', 10, "Verify 10 Slashdot headlines");
+cmp_ok($feed->late_breaking_news, '==', 0, "Verify 0 new headlines");
+
+$feed->parse(xml(2));
+
+cmp_ok($feed->num_headlines, '==', 20, "Verify 20 Slashdot headlines");
+cmp_ok($feed->late_breaking_news, '==', 10, "Verify 10 new headlines");
+cmp_ok(ref $feed->headlines, 'eq', "ARRAY", "Test getting Headlines as an array ref");
+
+$feed->hlobj("URI");
+$feed->hlobj(undef);
+cmp_ok($feed->hlobj, 'eq', 'URI', "attempt to set hlobj to undef");
+ok(!$feed->headline_as_id,"headline_as_id defaults to undef");
+ok(!$feed->debug,"debug defaults to undef");
+
+sub xml {
+    my $index = shift;
+    $index--;
+    return(
+qq|<?xml version="1.0" encoding="ISO-8859-1"?>
 
 <rdf:RDF
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -94,9 +108,8 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
 <link>http://slashdot.org/search.pl</link>
 </textinput>
 
-</rdf:RDF>|;
-
-my $slashdot_rss2 = qq|<?xml version="1.0" encoding="ISO-8859-1"?>
+</rdf:RDF>|,
+qq|<?xml version="1.0" encoding="ISO-8859-1"?>
 
 <rdf:RDF
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -171,12 +184,7 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
 <link>http://slashdot.org/search.pl</link>
 </textinput>
 
-</rdf:RDF>|;
+</rdf:RDF>|)[$index];
+}
 
-$feed->parse($slashdot_rss1);
-cmp_ok($feed->num_headlines, '==', 10, "Verify 10 Slashdot headlines");
-cmp_ok($feed->late_breaking_news, '==', 0, "Verify 0 new headlines");
-$feed->parse($slashdot_rss2);
-cmp_ok($feed->num_headlines, '==', 20, "Verify 20 Slashdot headlines");
-cmp_ok($feed->late_breaking_news, '==', 10, "Verify 10 new headlines");
-
+1;

@@ -11,5 +11,7 @@ WriteMakefile(
 	'Time::HiRes' => 0,
 	'URI' => 0,
 	'Digest::MD5' => 0,
+	'Encode' => 0,
+	'HTML::Entities' => 0,
     },
 );

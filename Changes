@@ -1,6 +1,32 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
-1.05	- Fixed caching issue.  Now cache in post process after every fetch
+2.0
+	- The biggest change in in the tests.  This distrobution is now at 100% coverage!
+	  I found serveral major issues just by painstakingly making sure that each bit
+	  was tested.  While I don't think that 100% is always nessesary, it just feels
+	  really good to see all green 100%'s on that coverage report.
+	- Added encode_utf8 before md5_base64 so watching uniqueness via 
+	  headline_as_id works with uft8 headlines (thanks hachi!)
+	- You can now create XML::RSS::Headline objects with just a url and description.
+	  It seems that you can have an RSS item without a title and the title is build
+	  from a substr of the description.
+	- added XML::RSS::Headline::PerlJobs example of subclassing XML::RSS::Headline
+	- Now if caching is turned on, it caches after every parse rather than on DESTROY
+	- now traps a bad 'store' attempt and issues a warn.  I had an if statement and
+	  for got I needed to try/catch with eval when using Storable.
+	- now decodes HTML entities in XML::RSS::Headline
+	- Lots of documentation updates and clarifications, and formatting changes.
+
+1.1
+	- Change the description in the modules name
+	- Added HTML::Entities decode on headlines (wonder why XML::RSS doesn't do it)
+	- cleaned up pod
+	- Beefed up the tests using Devel::Coverage
+	- Added sample subclass of XML::RSS::Headline (XML::RSS::Headline::PerlJobs) 
+	  was in documentation and just added it to the distrobution.
+
+1.05	
+	- Fixed caching issue.  Now cache in post process after every fetch
 	  instead of on object destroy (which was broken) :(
 	- Did "pod2text XML/RSS/Feed.pm > README"
 

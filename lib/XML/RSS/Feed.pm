@@ -2,20 +2,19 @@ package XML::RSS::Feed;
 use strict;
 use XML::RSS;
 use XML::RSS::Headline;
-use Carp qw(confess);
 use Time::HiRes;
 use Storable qw(store retrieve);
-use vars qw($VERSION);
-$VERSION = 1.05;
+
+our $VERSION = 2.00;
 
 =head1 NAME
 
-XML::RSS::Feed - Encapsulate RSS XML New Items Watching
+XML::RSS::Feed - Persistant XML RSS Encapsulation
 
 =head1 SYNOPSIS
 
-A quick and dirty non-POE example that uses a blocking B<sleep>.  The
-magic is in the B<late_breaking_news> method that returns only 
+A quick and dirty non-POE example that uses a blocking C<sleep>.  The
+magic is in the C<late_breaking_news> method that returns only 
 headlines it hasn't seen.
 
     use XML::RSS::Feed;
@@ -36,27 +35,25 @@ headlines it hasn't seen.
     }
 
 ATTENTION! - If you want a non-blocking way to watch multiple RSS sources 
-with one process use POE::Component::RSSAggregator.
+with one process use L<POE::Component::RSSAggregator>.
 
 =head1 CONSTRUCTOR
 
 =over 4
 
-=item B<XML::RSS::Feed-E<gt>new( url =E<gt> $url, name =E<gt> $name )>
-
-=over 4
+=item B<C<< XML::RSS::Feed->new( url => $url, name => $name ) >>>
 
 =item B<Required Params>
 
 =over 4
 
-=item B<name>
+=item * C<name> 
 
-Identifier for the RSS feed.
+Identifier and hash lookup key for the RSS feed. 
 
-=item B<url>
+=item * C<url> 
 
-The URL to the RSS feed
+The URL of the RSS feed
 
 =back
 
@@ -64,27 +61,29 @@ The URL to the RSS feed
 
 =over 4
 
-=item B<delay>
+=item * C<delay> 
 
 Number of seconds between updates (defaults to 600)
 
-=item B<tmpdir>
+=item * C<tmpdir> 
 
-Optional directory to cache a feed L<Storable> file to keep persistance between instances.
+Directory to keep a cached feed (using Storable) to keep persistance between instances.
 
-=item B<debug>
+=item * C<debug>
 
-Boolean value to turn debuging on.
+Turn debuging on.
 
-=item B<headline_as_id>
+=item * C<headline_as_id>
 
 Boolean value to use the headline as the id when URL isn't unique within a feed.
 
-=item B<hlobj>
+=item * C<hlobj>
 
 A class name sublcassed from L<XML::RSS::Headline>
 
-=back
+=item * C<max_headlines>
+
+The max number of headlines to keep.  (default is unlimited)
 
 =back
 
@@ -92,8 +91,7 @@ A class name sublcassed from L<XML::RSS::Headline>
 
 =cut 
 
-sub new
-{
+sub new {
     my $class = shift;
 
     my $self = bless { 
@@ -108,49 +106,45 @@ sub new
 	    $self->$method($args{$method})
 	}
 	else {
-	    confess "Invalid argument '$method'";
+	    warn "Invalid argument '$method'";
 	}
     }
     $self->_load_cached_headlines if $self->{tmpdir};
-    $self->{delay} = 3600 unless $self->{delay};
+    $self->delay(3600) unless $self->delay;
     return $self;
 }
 
-sub _load_cached_headlines
-{
+sub _load_cached_headlines {
     my ($self) = @_;
-    if ($self->{tmpdir}) {
-	my $filename_sto = $self->{tmpdir} . '/' . $self->name . '.sto';
-	my $filename_xml = $self->{tmpdir} . '/' . $self->name;
-	if (-s $filename_sto) {
-	    my $cached  = retrieve($filename_sto);
-	    $self->set_last_updated($cached->{last_updated});
-	    $self->process($cached->{items},$cached->{title},$cached->{link});
-	    warn "[$self->{name}] Loaded Cached RSS Storable\n" if $self->{debug};
-	}
-	elsif (-T $filename_xml) { # legacy XML caching
-	    open(my $fh, $filename_xml);
-	    my $xml = do { local $/, <$fh> };
-	    close $fh;
-	    warn "[$self->{name}] Loaded Cached RSS XML\n" if $self->{debug};
-	    $self->parse($xml);
-	}
-	else {
-	    warn "[$self->{name}] No Cache File Found\n" if $self->{debug};
-	}
+    my $filename_sto = $self->{tmpdir} . '/' . $self->name . '.sto';
+    my $filename_xml = $self->{tmpdir} . '/' . $self->name;
+    if (-s $filename_sto) {
+	my $cached  = retrieve($filename_sto);
+	my $title = $self->title || $cached->{title} || "";
+	$self->set_last_updated($cached->{last_updated});
+	$self->process($cached->{items},$title,$cached->{link});
+	warn "[$self->{name}] Loaded Cached RSS Storable\n" if $self->{debug};
+    }
+    elsif (-T $filename_xml) { # legacy XML caching
+	open(my $fh, $filename_xml);
+	my $xml = do { local $/, <$fh> };
+	close $fh;
+	warn "[$self->{name}] Loaded Cached RSS XML\n" if $self->{debug};
+	$self->parse($xml);
+    }
+    else {
+	warn "[$self->{name}] No Cache File Found\n" if $self->{debug};
     }
 }
 
-sub _strip_whitespace
-{
+sub _strip_whitespace {
     my ($string) = @_;
     $string =~ s/^\s+//;
     $string =~ s/\s+$//;
     return $string;
 }
 
-sub _mark_all_headlines_seen
-{
+sub _mark_all_headlines_seen {
     my ($self) = @_;
     $self->{rss_headline_ids}{$_->id} = 1 for $self->late_breaking_news;
 }
@@ -159,68 +153,59 @@ sub _mark_all_headlines_seen
 
 =over 4
 
-=item B<$feed-E<gt>parse( $xml_string )>
+=item B<C<< $feed->parse( $xml_string ) >>>
 
-pass in a xml string to parse with XML::RSS and then call 
-$feed->process() to process the results.
-
-=back
+Pass in a xml string to parse with XML::RSS and then call 
+C<< $feed->process() >> to process the results.
 
 =cut
 
-sub parse
-{
+sub parse {
     my ($self,$xml) = @_;
     my $rss = XML::RSS->new();
-    eval {
-	$rss->parse($xml);
-    };
+    eval { $rss->parse($xml) };
     if ($@) {
-	warn "[$self->{name}] !! Failed to parse RSS XML -> $@\n" if $self->debug;
+	warn "[$self->{name}] [!!] Failed to parse RSS XML: $@\n";
 	return 0;
     }
     else {
-	warn "[$self->{name}] Parsed RSS XML\n" if $self->debug;
+	warn "[$self->{name}] Parsed RSS XML\n" if $self->{debug};
 	my $items = [ map { { item => $_ } } @{$rss->{items}} ];
-	$self->process($items,$rss->{channel}{title},$rss->{channel}{link});
+
+	$self->process($items,($self->title || $rss->{channel}{title}),$rss->{channel}{link});
 	return 1;
     }
 }
 
-=over 4
+=item B<C<< $feed->process( $items, $title, $link ) >>>
 
-=item B<$feed-E<gt>process( $items, $title, $link )>
+=item B<C<< $feed->process( $items, $title ) >>>
 
-=item B<$feed-E<gt>process( $items, $title )>
+=item B<C<< $feed->process( $items ) >>>
 
-=item B<$feed-E<gt>process( $items )>
-
-Calls B<pre_process>, B<process_items>, B<post_process>, B<title>, and B<link>
+Calls C<pre_process>, C<process_items>, C<post_process>, C<title>, and C<link>
 methods to process the parsed results of an RSS XML feed.
 
 =over 4
 
-=item $items
+=item * C<$items>
 
-An array of hash refs which will eventually become XML::RSS::Headline objects.  Look
+An array of hash refs which will eventually become L<XML::RSS::Headline> objects.  Look
 at XML::RSS::Headline->new() for acceptable arguments.
 
-=item $title
+=item * C<$title>
 
 The title of the RSS feed.
 
-=item $link
+=item * C<$link>
 
 The RSS channel link (normally a URL back to the homepage) of the RSS feed.
 
 =back
 
-=back
-
 =cut
 
-sub process
-{
+sub process {
     my ($self,$items,$title,$link) = @_;
     if ($items) {
 	$self->pre_process;
@@ -228,89 +213,77 @@ sub process
 	$self->title($title) if $title;;
 	$self->link($link) if $link;
 	$self->post_process;
+	return 1;
     }
+    return 0;
 }
 
-=over 4
-
-=item B<$feed-E<gt>pre_process>
+=item B<C<< $feed->pre_process >>>
 
 Mark all headlines from previous run as seen.
 
-=back
-
 =cut
 
-sub pre_process
-{
+sub pre_process {
     my ($self) = @_;
     $self->_mark_all_headlines_seen;
 }
 
-=over 4
-
-=item B<$feed-E<gt>process_items( $items )>
+=item B<C<< $feed->process_items( $items ) >>>
 
 Turn an array refs of hash refs into L<XML::RSS::Headline> objects and added to the
 internal list of headlines.
 
-=back
-
 =cut
 
-sub process_items
-{
+sub process_items {
     my ($self,$items) = @_;
     if ($items) {
 	# used 'reverse' so order seen is preserved
 	for my $item (reverse @$items) { 
 	    $self->create_headline(%$item);
 	}
+	return 1;
     }
+    return 0;
 }
 
-=over 4
+=item B<C<< $feed->post_process >>>
 
-=item B<$feed-E<gt>post_process>
-
-Post process cleanup and debug messages.
-
-=back
+Post process cleanup, cache headlines (if tmpdir), and debug messages.
 
 =cut
 
-sub post_process
-{
+sub post_process {
     my ($self) = @_;
     if ($self->init) {
 	warn "[$self->{name}] " . $self->late_breaking_news . " New Headlines Found\n" 
-	    if $self->debug;
+	    if $self->{debug};
     }
     else {
 	$self->_mark_all_headlines_seen;
 	$self->init(1);
-	warn "[$self->{name}] " . $self->num_headlines . " Headlines Initialized\n" if $self->debug;
+	warn "[$self->{name}] " . $self->num_headlines . " Headlines Initialized\n" 
+	    if $self->{debug};
     }
+    $self->cache;
     $self->set_last_updated;
 }
 
-=over 4
+=item B<C<< $feed->create_headline( %args) >>>
 
-=item B<$feed-E<gt>create_headline( %args)>
-
-Create a new XML::RSS::Headline object and add it to the interal list.  Check
-XML::RSS::Headline->new() for acceptable values for B<%args>.
-
-=back
+Create a new L<XML::RSS::Headline> object and add it to the interal list.  Check
+B<C<< XML::RSS::Headline->new() >>> for acceptable values for C<%args>.
 
 =cut
 
-sub create_headline
-{
+sub create_headline {
     my ($self, %args ) = @_;
     my $hlobj = $self->{hlobj} || "XML::RSS::Headline";
     $args{headline_as_id} = $self->{headline_as_id};
     my $headline = $hlobj->new(%args);
+    return unless $headline;
+
     unshift (@{$self->{rss_headlines}}, $headline) unless $self->seen_headline($headline->id);
 
     # lets remove the oldest if the new headline put us over the max_headlines limit
@@ -320,106 +293,84 @@ sub create_headline
 	    # just in case max_headlines < number of headlines in the feed
 	    $self->{rss_headline_ids}{$garbage->id} = 1;
 	    warn "[$self->{name}] Exceeded maximum headlines, removing oldest headline\n" 
-		if $self->debug;
+		if $self->{debug};
 	}
     }
 }
 
-=over 4
-
-=item B<$feed-E<gt>num_headlines>
+=item B<C<< $feed->num_headlines >>>
 
 Returns the number of headlines for the feed.
 
-=back
-
 =cut
 
-sub num_headlines
-{
+sub num_headlines {
     my ($self) = @_;
     return scalar @{$self->{rss_headlines}};
 }
 
-=over 4
-
-=item B<$feed-E<gt>seen_headline( $id )>
+=item B<C<< $feed->seen_headline( $id ) >>>
 
 Just a boolean test to see if we've seen a headline or not.
 
-=back
-
 =cut
 
-sub seen_headline
-{
+sub seen_headline {
     my ($self,$id) = @_;
     return 1 if exists $self->{rss_headline_ids}{$id};
     return 0;
 }
 
-=over 4
+=item B<C<< $feed->headlines >>>
 
-=item B<$feed-E<gt>headlines>
-
-Returns an array or array reference (based on context) of XML::RSS::Headline objects
-
-=back
+Returns an array or array reference (based on context) of L<XML::RSS::Headline> objects
 
 =cut
 
-sub headlines
-{
+sub headlines {
     my ($self) = @_;
     return wantarray ? @{$self->{rss_headlines}} : $self->{rss_headlines};
 }
 
-=over 4
-
-=item B<$feed-E<gt>late_breaking_news>
+=item B<C<< $feed->late_breaking_news >>>
 
 Returns an array or the number of elements (based on context) of the 
-B<latest> XML::RSS::Headline objects.
-
-=back
+B<latest> L<XML::RSS::Headline> objects.
 
 =cut
 
-sub late_breaking_news
-{
+sub late_breaking_news {
     my ($self) = @_;
     my @list = grep { !$self->seen_headline($_->id); } @{$self->{rss_headlines}};
     return wantarray ? @list : scalar @list;
 }
 
 
-=over 4
-
-=item B<$feed-E<gt>cache>
+=item B<C<< $feed->cache >>>
 
 If tmpdir is defined the rss info is cached.
 
-=back
-
 =cut
 
-sub cache
-{
+sub cache {
     my ($self) = @_;
     return unless $self->tmpdir;
     if (-d $self->tmpdir && $self->num_headlines) {
 	my $tmp_filename = $self->tmpdir . '/' . $self->{name} . ".sto";
-	if (store($self->_build_dump_structure, $tmp_filename)) {
-	    warn "[$self->{name}] Cached RSS Storable to $tmp_filename\n" if $self->debug;
+	eval { store($self->_build_dump_structure, $tmp_filename) };
+	if ($@) {
+	    warn "[$self->{name}] Could not cache RSS XML to $tmp_filename\n";
+	    return;
 	}
 	else {
-	    warn "[$self->{name}] Could not cache RSS XML to $tmp_filename\n" if $self->debug;
+	    warn "[$self->{name}] Cached RSS Storable to $tmp_filename\n" if $self->{debug};
+	    return 1;
 	}
     }
+    return;
 }
 
-sub _build_dump_structure
-{
+sub _build_dump_structure {
     my ($self) = @_;
     my $cached = {};
     $cached->{title} = $self->title;
@@ -437,73 +388,58 @@ sub _build_dump_structure
     return $cached;
 }
 
-=over 4
+=item B<C<< $feed->set_last_updated >>>
 
-=item B<$feed-E<gt>set_last_updated>
-
-=item B<$feed-E<gt>set_last_updated( Time::HiRes::time )>
+=item B<C<< $feed->set_last_updated( Time::HiRes::time ) >>>
 
 Set the time of when the feed was last processed.  If you pass in a value
 it will be used otherwise calls Time::HiRes::time.
 
-=back
-
 =cut
 
-sub set_last_updated
-{
+sub set_last_updated {
     my ($self,$hires_time) = @_;
-    $self->{hires_timestamp} = $hires_time || Time::HiRes::time();
+    $self->{hires_timestamp} = $hires_time if $hires_time;
+    $self->{hires_timestamp} = Time::HiRes::time() unless $self->{hires_timestamp}
 }
 
-=over 4
-
-=item B<$feed-E<gt>last_updated>
+=item B<C<< $feed->last_updated >>>
 
 The time (in epoch seconds) of when the feed was last processed.
 
-=back
-
 =cut
 
-sub last_updated
-{
+sub last_updated {
     my ($self) = @_;
     return int $self->{hires_timestamp};
 }
 
-=over 4
-
-=item B<$feed-E<gt>last_updated_hires>
+=item B<C<< $feed->last_updated_hires >>>
 
 The time (in epoch seconds and milliseconds) of when the feed was last processed.
 
-=back
-
 =cut
 
-sub last_updated_hires
-{
+sub last_updated_hires {
     my ($self) = @_;
     return $self->{hires_timestamp};
 }
+
+=back
 
 =head1 SET/GET ACCESSOR METHODS
 
 =over 4
 
-=item B<$feed-E<gt>title>
+=item B<C<< $feed->title >>>
 
-=item B<$feed-E<gt>title( $title )>
+=item B<C<< $feed->title( $title ) >>>
 
 The title of the RSS feed.
 
-=back
-
 =cut
 
-sub title
-{
+sub title {
     my ($self,$title) = @_;
     if ($title) {
 	$title = _strip_whitespace($title);
@@ -512,271 +448,203 @@ sub title
     $self->{title};
 }
 
-=over 4
+=item B<C<< $feed->debug >>>
 
-=item B<$feed-E<gt>debug>
-
-=item B<$feed-E<gt>debug( $bool )>
+=item B<C<< $feed->debug( $bool ) >>>
 
 Turn on debugging messages
 
-=back
-
 =cut
 
-sub debug
-{
+sub debug {
     my $self = shift @_;
     $self->{debug} = shift if @_;
     $self->{debug};
 }
 
-=over 4
+=item B<C<< $feed->init >>>
 
-=item B<$feed-E<gt>init>
-
-=item B<$feed-E<gt>init( $bool )>
+=item B<C<< $feed->init( $bool ) >>>
 
 init is used so that we just load the current headlines and don't return all 
 headlines.  in other words we initialize them.  Takes a boolean argument.
 
-=back
-
 =cut
 
-sub init
-{
+sub init {
     my $self = shift @_;
     $self->{init} = shift if @_;
     $self->{init};
 }
 
-=over 4
+=item B<C<< $feed->name >>>
 
-=item B<$feed-E<gt>name>
-
-=item B<$feed-E<gt>name( $name )>
+=item B<C<< $feed->name( $name ) >>>
 
 The identifier of an RSS feed.
 
-=back
-
 =cut
 
-sub name
-{
+sub name {
     my $self = shift;
     $self->{name} = shift if @_;
     $self->{name};
 }
 
-=over 4
+=item B<C<< $feed->delay >>>
 
-=item B<$feed-E<gt>delay>
-
-=item B<$feed-E<gt>delay( $seconds )>
+=item B<C<< $feed->delay( $seconds ) >>>
 
 Number of seconds between updates.
 
-=back
-
 =cut
 
-sub delay
-{
+sub delay {
     my $self = shift @_;
     $self->{delay} = shift if @_;
     $self->{delay};
 }
 
-=over 4
+=item B<C<< $feed->link >>>
 
-=item B<$feed-E<gt>link>
-
-=item B<$feed-E<gt>link( $rss_channel_url )>
+=item B<C<< $feed->link( $rss_channel_url ) >>>
 
 The url in the RSS feed with a link back to the site where the RSS feed came from.
 
-=back
-
 =cut
 
-sub link
-{
+sub link {
     my $self = shift @_;
     $self->{link} = shift if @_;
     $self->{link};
 }
 
-=over 4
+=item B<C<< $feed->url >>>
 
-=item B<$feed-E<gt>url>
-
-=item B<$feed-E<gt>url( $url )>
+=item B<C<< $feed->url( $url ) >>>
 
 The url in the RSS feed with a link back to the site where the RSS feed came from.
 
-=back
-
 =cut
 
-sub url
-{
+sub url {
     my $self = shift @_;
     $self->{url} = shift if @_;
     $self->{url};
 }
 
-=over 4
+=item B<C<< $feed->headline_as_id >>>
 
-=item B<$feed-E<gt>headline_as_id>
-
-=item B<$feed-E<gt>headline_as_id( $bool )>
+=item B<C<< $feed->headline_as_id( $bool ) >>>
 
 Within some RSS feeds the URL may not always be unique, in these cases
 you can use the headline as the unique id.  The id is used to check whether
 or not a feed is new or has already been seen.
 
-=back
-
 =cut
 
-sub headline_as_id
-{
-    my $self = shift @_;
-    # FIXME this should loop through an existing headlines and set their 
-    #       headline_as_id value as well
-    $self->{headline_as_id} = shift if @_;
+sub headline_as_id {
+    my ($self,$bool) = @_;
+    if (defined $bool) {
+	$self->{headline_as_id} = $bool;
+	$_->headline_as_id($bool) for $self->headlines;
+    }
     $self->{headline_as_id};
 }
 
-=over 4
+=item B<C<< $feed->hlobj >>>
 
-=item B<$feed-E<gt>hlobj>
+=item B<C<< $feed->hlobj( $class ) >>>
 
-=item B<$feed-E<gt>hlobj( $class )>
-
-Ablity to change use a subclass XML::RSS::Headline package to encapsulate
-the RSS headlines.  (See Perl Jobs example in L<XML::RSS::Headline>).  This
-should just be the package name
-
-=back
+Ablity to use a subclass of L<XML::RSS::Headline>.  (See Perl Jobs example in 
+L<XML::RSS::Headline::PerlJobs>).  This should just be the name of the subclass.
 
 =cut
 
-sub hlobj
-{
-    my $self = shift @_;
-    $self->{hlobj} = shift if @_;
+sub hlobj {
+    my ($self,$hlobj) = @_;
+    $self->{hlobj} = $hlobj if defined $hlobj;
     $self->{hlobj};
 }
 
-=over 4
+=item B<C<< $feed->tmpdir >>>
 
-=item B<$feed-E<gt>tmpdir>
-
-=item B<$feed-E<gt>tmpdir( $tmpdir )>
+=item B<C<< $feed->tmpdir( $tmpdir ) >>>
 
 Temporay directory to store cached RSS XML between instances for persistance.
 
-=back
-
 =cut
 
-sub tmpdir
-{
+sub tmpdir {
     my $self = shift @_;
     $self->{tmpdir} = shift if @_;
     $self->{tmpdir};
 }
 
-=over 4
+=item B<C<< $feed->max_headlines >>>
 
-=item B<$feed-E<gt>max_headlines>
-
-=item B<$feed-E<gt>max_headlines( $integer )>
+=item B<C<< $feed->max_headlines( $integer ) >>>
 
 The maximum number of headlines you'd like to keep track of.  (0 means infinate)
 
-=back
-
 =cut
 
-sub max_headlines
-{
+sub max_headlines {
     my $self = shift @_;
     $self->{max_headlines} = shift if @_;
     $self->{max_headlines};
 }
 
+=back
+
 =head1 DEPRECATED METHODS
 
 =over 4
 
-=item B<$feed-E<gt>failed_to_fetch>
+=item B<C<< $feed->failed_to_fetch >>>
 
 This should was deprecated because, the object shouldn't really know
 anything about fetching, it just processes the results.  This method 
 currently will always return false
 
-=back
-
 =cut
 
-sub failed_to_fetch
-{
+sub failed_to_fetch {
     warn __PACKAGE__ . "::failed_to_fetch has been deprecated";
     return;
 }
 
-=over 4
-
-=item B<$feed-E<gt>failed_to_parse>
+=item B<C<< $feed->failed_to_parse >>>
 
 This method was deprecated because, $feed->parse now returns a bool value.
 This method will always return false
 
-=back
-
 =cut
 
-sub failed_to_parse
-{
+sub failed_to_parse {
     warn __PACKAGE__ . "::failed_to_parse has been deprecated";
     return;
 }
 
+=back
+
 =head1 AUTHOR
 
-=over 4
+Copyright 2004 Jeff Bisbee <jbisbee@cpan.org>
 
-=item Jeff Bisbee
-
-=item CPAN ID: JBISBEE
-
-=item jbisbee@cpan.org
-
-=item http://search.cpan.org/author/JBISBEE/
-
-=back
+http://search.cpan.org/~jbisbee/
 
 =head1 COPYRIGHT
 
-=over 4
+This program is free software; you can redistribute it and/or modify it under 
+the same terms as Perl itself.
 
-=item This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
-
-=item The full text of the license can be found in the LICENSE file included with this module.
-
-=back
+The full text of the license can be found in the LICENSE file included with 
+this module.
 
 =head1 SEE ALSO
 
-=over 4
-
-=item L<XML::RSS::Headline>, L<POE::Component::RSSAggregator>
-
-=back
+L<XML::RSS::Headline>, L<XML::RSS::Headline::PerlJobs>, L<POE::Component::RSSAggregator>
 
 =cut
 

@@ -5,6 +5,7 @@ Todo
 Changes
 lib/XML/RSS/Feed.pm
 lib/XML/RSS/Headline.pm
+lib/XML/RSS/Headline/PerlJobs.pm
 t/001_load.t
 t/002_parse.t
 t/003_process.t
@@ -15,5 +16,13 @@ t/007_fetch_feed.t
 t/008_store_retrieve.t
 t/009_max_headlines.t
 t/010_deprecated_methods.t
+t/011_pod.t
+t/012_pod_coverage.t
+t/013_legacy.t
+t/014_last_updated.t
+t/015_feed_exceptions.t
+t/016_title_from_description.t
+t/017_perljobs.t
+t/018_debug.t
 Makefile.PL
 META.yml                                 Module meta-data (added by MakeMaker)

@@ -1,10 +1,10 @@
 NAME
-    XML::RSS::Feed - Encapsulate RSS XML New Items Watching
+    XML::RSS::Feed - Persistant XML RSS Encapsulation
 
 SYNOPSIS
-    A quick and dirty non-POE example that uses a blocking sleep. The magic
-    is in the late_breaking_news method that returns only headlines it
-    hasn't seen.
+    A quick and dirty non-POE example that uses a blocking "sleep". The
+    magic is in the "late_breaking_news" method that returns only headlines
+    it hasn't seen.
 
         use XML::RSS::Feed;
         use LWP::Simple qw(get);
@@ -27,178 +27,183 @@ SYNOPSIS
     sources with one process use POE::Component::RSSAggregator.
 
 CONSTRUCTOR
-    XML::RSS::Feed->new( url => $url, name => $name )
+    "XML::RSS::Feed->new( url => $url, name => $name )"
+    Required Params
 
-        Required Params
+        * "name"
+            Identifier and hash lookup key for the RSS feed.
 
-            name
-                Identifier for the RSS feed.
+        * "url"
+            The URL of the RSS feed
 
-            url The URL to the RSS feed
+    Optional Params
 
-        Optional Params
+        * "delay"
+            Number of seconds between updates (defaults to 600)
 
-            delay
-                Number of seconds between updates (defaults to 600)
+        * "tmpdir"
+            Directory to keep a cached feed (using Storable) to keep
+            persistance between instances.
 
-            tmpdir
-                Optional directory to cache a feed Storable file to keep
-                persistance between instances.
+        * "debug"
+            Turn debuging on.
 
-            debug
-                Boolean value to turn debuging on.
+        * "headline_as_id"
+            Boolean value to use the headline as the id when URL isn't
+            unique within a feed.
 
-            headline_as_id
-                Boolean value to use the headline as the id when URL isn't
-                unique within a feed.
+        * "hlobj"
+            A class name sublcassed from XML::RSS::Headline
 
-            hlobj
-                A class name sublcassed from XML::RSS::Headline
+        * "max_headlines"
+            The max number of headlines to keep. (default is unlimited)
 
 METHODS
-    $feed->parse( $xml_string )
-        pass in a xml string to parse with XML::RSS and then call
-        $feed->process() to process the results.
+    "$feed->parse( $xml_string )"
+        Pass in a xml string to parse with XML::RSS and then call
+        "$feed->process()" to process the results.
 
-    $feed->process( $items, $title, $link )
-    $feed->process( $items, $title )
-    $feed->process( $items )
-        Calls pre_process, process_items, post_process, title, and link
-        methods to process the parsed results of an RSS XML feed.
+    "$feed->process( $items, $title, $link )"
+    "$feed->process( $items, $title )"
+    "$feed->process( $items )"
+        Calls "pre_process", "process_items", "post_process", "title", and
+        "link" methods to process the parsed results of an RSS XML feed.
 
-        $items
+        * $items
             An array of hash refs which will eventually become
             XML::RSS::Headline objects. Look at XML::RSS::Headline->new()
             for acceptable arguments.
 
-        $title
+        * $title
             The title of the RSS feed.
 
-        $link
+        * $link
             The RSS channel link (normally a URL back to the homepage) of
             the RSS feed.
 
-    $feed->pre_process
+    "$feed->pre_process"
         Mark all headlines from previous run as seen.
 
-    $feed->process_items( $items )
+    "$feed->process_items( $items )"
         Turn an array refs of hash refs into XML::RSS::Headline objects and
         added to the internal list of headlines.
 
-    $feed->post_process
-        Post process cleanup and debug messages.
+    "$feed->post_process"
+        Post process cleanup, cache headlines (if tmpdir), and debug
+        messages.
 
-    $feed->create_headline( %args)
+    "$feed->create_headline( %args)"
         Create a new XML::RSS::Headline object and add it to the interal
-        list. Check XML::RSS::Headline->new() for acceptable values for
+        list. Check "XML::RSS::Headline->new()" for acceptable values for
         %args.
 
-    $feed->num_headlines
+    "$feed->num_headlines"
         Returns the number of headlines for the feed.
 
-    $feed->seen_headline( $id )
+    "$feed->seen_headline( $id )"
         Just a boolean test to see if we've seen a headline or not.
 
-    $feed->headlines
+    "$feed->headlines"
         Returns an array or array reference (based on context) of
         XML::RSS::Headline objects
 
-    $feed->late_breaking_news
+    "$feed->late_breaking_news"
         Returns an array or the number of elements (based on context) of the
         latest XML::RSS::Headline objects.
 
-    $feed->cache
+    "$feed->cache"
         If tmpdir is defined the rss info is cached.
 
-    $feed->set_last_updated
-    $feed->set_last_updated( Time::HiRes::time )
+    "$feed->set_last_updated"
+    "$feed->set_last_updated( Time::HiRes::time )"
         Set the time of when the feed was last processed. If you pass in a
         value it will be used otherwise calls Time::HiRes::time.
 
-    $feed->last_updated
+    "$feed->last_updated"
         The time (in epoch seconds) of when the feed was last processed.
 
-    $feed->last_updated_hires
+    "$feed->last_updated_hires"
         The time (in epoch seconds and milliseconds) of when the feed was
         last processed.
 
 SET/GET ACCESSOR METHODS
-    $feed->title
-    $feed->title( $title )
+    "$feed->title"
+    "$feed->title( $title )"
         The title of the RSS feed.
 
-    $feed->debug
-    $feed->debug( $bool )
+    "$feed->debug"
+    "$feed->debug( $bool )"
         Turn on debugging messages
 
-    $feed->init
-    $feed->init( $bool )
+    "$feed->init"
+    "$feed->init( $bool )"
         init is used so that we just load the current headlines and don't
         return all headlines. in other words we initialize them. Takes a
         boolean argument.
 
-    $feed->name
-    $feed->name( $name )
+    "$feed->name"
+    "$feed->name( $name )"
         The identifier of an RSS feed.
 
-    $feed->delay
-    $feed->delay( $seconds )
+    "$feed->delay"
+    "$feed->delay( $seconds )"
         Number of seconds between updates.
 
-    $feed->link
-    $feed->link( $rss_channel_url )
+    "$feed->link"
+    "$feed->link( $rss_channel_url )"
         The url in the RSS feed with a link back to the site where the RSS
         feed came from.
 
-    $feed->url
-    $feed->url( $url )
+    "$feed->url"
+    "$feed->url( $url )"
         The url in the RSS feed with a link back to the site where the RSS
         feed came from.
 
-    $feed->headline_as_id
-    $feed->headline_as_id( $bool )
+    "$feed->headline_as_id"
+    "$feed->headline_as_id( $bool )"
         Within some RSS feeds the URL may not always be unique, in these
         cases you can use the headline as the unique id. The id is used to
         check whether or not a feed is new or has already been seen.
 
-    $feed->hlobj
-    $feed->hlobj( $class )
-        Ablity to change use a subclass XML::RSS::Headline package to
-        encapsulate the RSS headlines. (See Perl Jobs example in
-        XML::RSS::Headline). This should just be the package name
+    "$feed->hlobj"
+    "$feed->hlobj( $class )"
+        Ablity to use a subclass of XML::RSS::Headline. (See Perl Jobs
+        example in XML::RSS::Headline::PerlJobs). This should just be the
+        name of the subclass.
 
-    $feed->tmpdir
-    $feed->tmpdir( $tmpdir )
+    "$feed->tmpdir"
+    "$feed->tmpdir( $tmpdir )"
         Temporay directory to store cached RSS XML between instances for
         persistance.
 
-    $feed->max_headlines
-    $feed->max_headlines( $integer )
+    "$feed->max_headlines"
+    "$feed->max_headlines( $integer )"
         The maximum number of headlines you'd like to keep track of. (0
         means infinate)
 
 DEPRECATED METHODS
-    $feed->failed_to_fetch
+    "$feed->failed_to_fetch"
         This should was deprecated because, the object shouldn't really know
         anything about fetching, it just processes the results. This method
         currently will always return false
 
-    $feed->failed_to_parse
+    "$feed->failed_to_parse"
         This method was deprecated because, $feed->parse now returns a bool
         value. This method will always return false
 
 AUTHOR
-    Jeff Bisbee
-    CPAN ID: JBISBEE
-    jbisbee@cpan.org
-    http://search.cpan.org/author/JBISBEE/
+    Copyright 2004 Jeff Bisbee <jbisbee@cpan.org>
+
+    http://search.cpan.org/~jbisbee/
 
 COPYRIGHT
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
+
     The full text of the license can be found in the LICENSE file included
     with this module.
 
 SEE ALSO
-    XML::RSS::Headline, POE::Component::RSSAggregator
+    XML::RSS::Headline, XML::RSS::Headline::PerlJobs,
+    POE::Component::RSSAggregator
 

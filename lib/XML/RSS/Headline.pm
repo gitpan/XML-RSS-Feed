@@ -1,15 +1,17 @@
 package XML::RSS::Headline;
 use strict;
 use Digest::MD5 qw(md5_base64);
+use Encode qw(encode_utf8);
 use URI;
-use Carp qw(cluck confess);
 use Time::HiRes;
-use vars qw($VERSION);
-$VERSION = 1.05;
+use HTML::Entities;
+use constant DESCRIPTION_HEADLINE => 45; # length of headline when from description
+
+our $VERSION = 2.00;
 
 =head1 NAME
 
-XML::RSS::Headline - Wrapper for RSS Feed Headline Items
+XML::RSS::Headline - Persistant XML RSS Encapsulation
 
 =head1 SYNOPSIS
 
@@ -21,9 +23,9 @@ headline (when URL uniqueness fails).
 
 =over 4
 
-=item B<XML::RSS::Headline-E<gt>new( headline =E<gt> $headline, url =E<gt> $url )>
+=item B<C<< XML::RSS::Headline->new( headline =E<gt> $headline, url =E<gt> $url ) >>>
 
-=item B<XML::RSS::Headline-E<gt>new( item =E<gt> $item )>
+=item B<C<< XML::RSS::Headline->new( item =E<gt> $item ) >>>
 
 A XML::RSS::Headline object can be initialized either with headline/url or 
 with a parse XML::RSS item structure.  The argument 'headline_as_id' is 
@@ -33,138 +35,130 @@ optional and takes a boolean as its value.
 
 =cut 
 
-sub new
-{
+sub new {
     my $class = shift @_;
     my $self = bless {}, $class;
     my %args = @_;
-    my $first_seen = $args{first_seen} || Time::HiRes::time();
+    my $first_seen = $args{first_seen};
+    my $headline_as_id = $args{headline_as_id} || 0;
     delete $args{first_seen} if exists $args{first_seen};
+    delete $args{headline_as_id} if exists $args{headline_as_id};
 
     if ($args{item}) {
-	confess 'missing title or link within item' unless 
-	    $args{item}->{link} && $args{item}->{title};
+	unless (($args{item}->{title} || $args{item}->{description}) && $args{item}->{link}) {
+	    warn "item must contain either title/link or description/link";
+	    return;
+	}
     }
     else {
-	confess 'url/headline or item required' unless $args{url} && $args{headline};
+	unless ($args{url} && ($args{headline} || $args{description})) {
+	    warn 'Either item, url/headline. or url/description are required';
+	    return;
+	}
     }
-    foreach my $method (keys %args) {
+
+    $self->headline_as_id($headline_as_id);
+
+    for my $method (keys %args) {
 	if ($self->can($method)) {
 	    $self->$method($args{$method})
 	}
 	else {
-	    confess "Invalid argument '$method'";
+	    warn "Invalid argument: '$method'";
 	}
     }
+
+    unless ($self->headline) {
+	warn "Failed to set headline";
+	return;
+    }
+
     $self->set_first_seen($first_seen);
     return $self;
 }
+
 
 =head1 METHODS
 
 =over 4
 
-=item B<$headline-E<gt>id>
+=item B<C<< $headline->id >>>
 
 The id is our unique identifier for a headline/url combination.  Its how we 
 can keep track of which headlines we have seen before and which ones are new.
 The id is either the URL or a MD5 checksum generated from the headline text 
 (if B<$headline-E<gt>headline_as_id> is true);
 
-=back
-
 =cut 
 
-sub id
-{
+sub id {
     my ($self) = shift @_;
     return $self->{_rss_headline_id} if $self->headline_as_id;
     return $self->url;
 }
 
-sub _cache_id
-{
+sub _cache_id {
     my ($self) = @_;
-    $self->{_rss_headline_id} = md5_base64($self->headline)
+    $self->{_rss_headline_id} = md5_base64(encode_utf8($self->{safe_headline}))
+	if $self->{safe_headline}; 
 }
 
-=over 4
-
-=item B<$headline-E<gt>multiline_headline>
+=item B<C<< $headline->multiline_headline >>>
 
 This method returns the headline as either an array or array 
 reference based on context.  It splits headline on newline characters 
 into the array.
 
-=back
-
 =cut 
 
-sub multiline_headline
-{
+sub multiline_headline {
     my ($self) = @_;
     my @multiline_headline = split /\n/, $self->headline;
     return wantarray ? @multiline_headline : \@multiline_headline;
 }
 
-=over 4
-
-=item B<$headline-E<gt>item( $item )>
+=item B<C<< $headline->item( $item ) >>>
 
 Init the object for a parsed RSS item returned by L<XML::RSS>.
 
-=back
-
 =cut 
 
-sub item
-{
+sub item {
     my ($self,$item) = @_;
-    if ($item) {
-	$self->url($item->{link});
-	$self->headline($item->{title});
-	$self->description($item->{description});
-    }
+    return unless $item;
+    $self->url($item->{link});
+    $self->headline($item->{title});
+    $self->description($item->{description});
 }
 
-=over 4
+=item B<C<< $headline->set_first_seen >>>
 
-=item B<$headline-E<gt>set_first_seen>
-
-=item B<$headline-E<gt>set_first_seen( Time::HiRes::time )>
+=item B<C<< $headline->set_first_seen( Time::HiRes::time() ) >>>
 
 Set the time of when the headline was first seen.  If you pass in a value
-it will be used otherwise calls Time::HiRes::time.
-
-=back
+it will be used otherwise calls Time::HiRes::time().
 
 =cut
 
-sub set_first_seen
-{
+sub set_first_seen {
     my ($self,$hires_time) = @_;
-    $self->{hires_timestamp} = $hires_time || Time::HiRes::time();
+    $self->{hires_timestamp} = $hires_time;
+    $self->{hires_timestamp} = Time::HiRes::time() unless $hires_time;
+    return 1;
 }
 
-=over 4
-
-=item B<$headline-E<gt>first_seen>
+=item B<C<< $headline->first_seen >>>
 
 The time (in epoch seconds) of when the headline was first seen.
 
-=back
-
 =cut
 
-sub first_seen
-{
+sub first_seen {
     my ($self) = @_;
     return int $self->{hires_timestamp};
 }
 
-=over 4
-
-=item B<$headline-E<gt>first_seen_hires>
+=item B<C<< $headline->first_seen_hires >>>
 
 The time (in epoch seconds and milliseconds) of when the headline was first seen.
 
@@ -172,8 +166,7 @@ The time (in epoch seconds and milliseconds) of when the headline was first seen
 
 =cut
 
-sub first_seen_hires
-{
+sub first_seen_hires {
     my ($self) = @_;
     return $self->{hires_timestamp};
 }
@@ -182,59 +175,86 @@ sub first_seen_hires
 
 =over 4
 
-=item B<$headline-E<gt>headline>
+=item B<C<< $headline->headline >>>
 
-=item B<$headline-E<gt>headline( $headline )>
+=item B<C<< $headline->headline( $headline ) >>>
 
-The rss headline/title
+The rss headline/title.  HTML::Entities::decode_entities is used when the
+headline is set.  (not sure why XML::RSS doesn't do this)
 
 =cut 
 
-sub headline
-{
+sub headline {
     my ($self,$headline) = @_;
     if ($headline) {
+	$self->{headline} = decode_entities $headline;
 	$self->{headline} = $headline;
-	$self->_cache_id if $self->headline_as_id;
+	if ($self->{headline_as_id}) {
+	    $self->{safe_headline} = $headline;
+	    $self->_cache_id; 
+	}
     }
     return $self->{headline};
 }
 
-=item B<$headline-E<gt>url>
+=item B<C<< $headline->url >>>
 
-=item B<$headline-E<gt>url( $url )>
+=item B<C<< $headline->url( $url ) >>>
 
 The rss link/url.  URI->canonical is called to attempt to normalize the URL
 
 =cut 
 
-sub url
-{
+sub url {
     my ($self,$url) = @_;
     # clean the URL up a bit
     $self->{url} = URI->new($url)->canonical if $url;
     return $self->{url};
 }
 
-=item B<$headline-E<gt>description>
+=item B<C<< $headline-E<gt>description >>>
 
-=item B<$headline-E<gt>description( $description )>
+=item B<C<< $headline-E<gt>description( $description ) >>>
 
 The description of the RSS headline.
 
 =cut 
 
-sub description
-{
+sub description {
     my ($self,$description) = @_;
-    $self->{description} = $description if $description;
+    if ($description) {
+	$self->{description} = decode_entities $description;
+	$self->_description_headline unless $self->headline;
+    }
     return $self->{description};
 }
 
+sub _description_headline {
+    my ($self) = @_;
+    my $punctuation = qr/[\.\,\?\!\:\;]+/s;
 
-=item B<$headline-E<gt>headline_as_id>
+    my $description = $self->{description};
+    $description =~ s/<br *\/*>/\n/g; # turn br into newline
+    $description =~ s/<.+?>/ /g;
 
-=item B<$headline-E<gt>headline_as_id( $bool )>
+    my $headline = (split $punctuation, $description)[0] || "";
+    $headline =~ s/^\s+//;
+    $headline =~ s/\s+$//;
+
+    my $build_headline = "";
+    for my $word (split /\s+/, $headline) {
+	$build_headline .= " " if $build_headline;
+	$build_headline .= $word;
+	last if length $build_headline > DESCRIPTION_HEADLINE;
+    }
+
+    return unless $build_headline;
+    $self->headline($build_headline .= '...');
+}
+
+=item B<C<< $headline->headline_as_id >>>
+
+=item B<C<< $headline->headline_as_id( $bool ) >>>
 
 A bool value that determines whether the URL will be the unique identifier or 
 the if an MD5 checksum of the RSS title will be used instead.  (when the URL
@@ -246,8 +266,7 @@ debianplanet.org / search.cpan.org,search.cpan.org:80)
 
 =cut 
 
-sub headline_as_id
-{
+sub headline_as_id {
     my ($self,$bool) =  @_;
     if (defined $bool) {
 	$self->{headline_as_id} = $bool;
@@ -256,93 +275,28 @@ sub headline_as_id
     $self->{headline_as_id};
 }
 
-=item B<$headline-E<gt>timestamp>
+=item B<C<< $headline->timestamp >>>
 
-=item B<$headline-E<gt>timestamp( Time::HiRes::time() )>
+=item B<C<< $headline->timestamp( Time::HiRes::time() ) >>>
 
-A high resolution timestamp that is set using Time::HiRes::time when the 
+A high resolution timestamp that is set using Time::HiRes::time() when the 
 object is created.
-
-=back
 
 =cut 
 
-sub timestamp
-{
+sub timestamp {
     my ($self,$timestamp) = @_;
     $self->{timestamp} = $timestamp if $timestamp;
     return $self->{timestamp};
 }
 
-=head1 SUBCLASS EXAMPLE
-
-You can also subclass XML::RSS::Headline to provide a 'multiline' RSS headline
-based on additional information inside the RSS Feed.  Here is an example for 
-the Perl Jobs (jobs.perl.org) RSS feed.
-
-    use XML::RSS::Feed;
-    use LWP::Simple qw(get);
-    use PerlJobs;
-
-    my $feed = XML::RSS::Feed->new(
-	url   => "http://jobs.perl.org/rss/standard.rss",
-	hlobj => "PerlJobs",
-	name  => "perljobs",
-	delay => 60,
-    );
-
-    while (1) {
-	$feed->parse(get($feed->url));
-	print $_->headline . "\n" for $feed->late_breaking_news;
-	sleep($feed->delay); 
-    }
-
-Here is PerlJobs.pm which is subclassed from XML::RSS::Headline in
-this example and B<$headline-E<gt>item> is redefined to init 
-B<$self-E<gt>headline> with more nested info located with in the 
-parsed RSS item structure.  (Notice that we're just concatinating 
-bits of info with newlines to seperate the lines.
-
-    package XML::RSS::Headline::PerlJobs;
-    use strict;
-    use base qw(XML::RSS::Headline);
-
-    sub item
-    {
-	my ($self,$item) = @_;
-	$self->SUPER::item($item); # set url and description
-	$self->headline( 
-	    $item->{title} . "\n" . 
-	    $item->{'http://jobs.perl.org/rss/'}{company_name} || "Unknown Company" . " - " .
-	    $item->{'http://jobs.perl.org/rss/'}{location} || "Unknown Location" . "\n" .  
-	    $item->{'http://jobs.perl.org/rss/'}{hours} || "Unknown Hours" . ", " . 
-	    $item->{'http://jobs.perl.org/rss/'}{employment_terms} || "Unknown Terms"
-	);
-    }
-
-    1;
-
-Here is the output from rssbot on irc.perl.org in channel #news (which uses
-these modules)
-
-    <rssbot>  + Part Time Perl
-    <rssbot>    Brian Koontz - United States, TX, Dallas
-    <rssbot>    Part time, Independent contractor (project-based)
-    <rssbot>    http://jobs.perl.org/job/950
+=back
 
 =head1 AUTHOR
 
-=over 1
+Copyright 2004 Jeff Bisbee <jbisbee@cpan.org>
 
-=item Jeff Bisbee
-
-=item CPAN ID: JBISBEE
-
-=item jbisbee@cpan.org
-
-=item http://search.cpan.org/author/JBISBEE/
-
-=back
+http://search.cpan.org/~jbisbee/
 
 =head1 COPYRIGHT
 
