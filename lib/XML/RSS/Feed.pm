@@ -2,15 +2,19 @@ package XML::RSS::Feed;
 use strict;
 use XML::RSS;
 use XML::RSS::Feed::Factory;
-use XML::RSS::Feed::Headline;
 use vars qw($VERSION);
-$VERSION = 0.02;
+$VERSION = 0.10;
 
 =head1 NAME
 
 XML::RSS::Feed - Encapsulate RSS XML New Items Watching
 
 =head1 SYNOPSIS
+
+ATTENTION! - If you want a non-blocking way to watch multiple RSS sources 
+with one process.  Use POE::Component::RSSAggregator
+
+A quick non-POE example:
 
   #!/usr/bin/perl -w
   use strict;
@@ -27,25 +31,77 @@ XML::RSS::Feed - Encapsulate RSS XML New Items Watching
   while (1) {
       print "Fetching " . $feed->url . "\n";
       my $rssxml = get($feed->url);
-      if (my @late_breaking_news = $feed->parse($rssxml)) {;
-        for my $headline (@late_breaking_news) {
-          print $headline->headline . "\n";
-        }
+      if (my @late_breaking_news = $feed->parse($rssxml)) {
+          for my $headline (@late_breaking_news) {
+              print $headline->headline . "\n";
+          }
       }
       sleep($feed->delay);
   }
 
-=head1 DESCRIPTION
+An example of subclassing XML::RSS::Headline
 
-ATTENTION! - If you want a non-blocking way to watch multiple RSS sources
-with one process.  Use POE::Component::RSSAggregator
+  #!/usr/bin/perl -w
+  use strict;
+  use XML::RSS::Feed;
+  use LWP::Simple;
+  use PerlJobs;
+
+  my %source = (
+      url   => http://jobs.perl.org/rss/standard.rss
+      hlobj => PerlJobs
+      title => jobs.perl.org
+      name  => perljobs
+      delay => 1800
+  );
+  my $feed = XML::RSS::Feed->new(%source);
+
+  while (1) {
+      print "Fetching " . $feed->url . "\n";
+      my $rssxml = get($feed->url);
+      if (my @late_breaking_news = $feed->parse($rssxml)) {
+          for my $headline (@late_breaking_news) {
+              print $headline->headline . "\n";
+          }
+      }
+      sleep($feed->delay);
+  }
+
+and here is PerlJobs.pm which is subclassed from XML::RSS::Headline in
+this example.
+
+  package PerlJobs;
+  use strict;
+  use XML::RSS::Feed;
+  use base qw(XML::RSS::Headline);
+
+  sub headline
+  {
+      my ($self) = @_;
+      my $sub_hash = $self->{item}{'http://jobs.perl.org/rss/'};
+      return $self->{item}{title} . "\n" . $sub_hash->{company_name} . 
+	  " - " . $sub_hash->{location} . "\n" .  $sub_hash->{hours} . 
+	  ", " . $sub_hash->{employment_terms};
+  }
+
+  1;
+
+This can pull other info from the item block into your headline.  Here
+is the output from rssbot on irc.perl.org in channel #news (which uses
+these modules)
+
+  <rssbot> -- jobs.perl.org (http://jobs.perl.org/)
+  <rssbot>  + Part Time Perl
+  <rssbot>    Brian Koontz - United States, TX, Dallas
+  <rssbot>    Part time, Independent contractor (project-based)
+  <rssbot>    http://jobs.perl.org/job/950
 
 =head1 AUTHOR
 
-	Jeff Bisbee
-	CPAN ID: JBISBEE
-	cpan@jbisbee.com
-	http://www.jbisbee.com/perl/modules/
+Jeff Bisbee
+CPAN ID: JBISBEE
+cpan@jbisbee.com
+http://search.cpan.org/author/JBISBEE/
 
 =head1 COPYRIGHT
 
@@ -55,10 +111,9 @@ it and/or modify it under the same terms as Perl itself.
 The full text of the license can be found in the
 LICENSE file included with this module.
 
-
 =head1 SEE ALSO
 
-L<POE::Component::RSSAggregator>, L<XML::RSS::Feed::Factory>, L<XML::RSS::Feed::Headline>
+L<POE::Component::RSSAggregator>, L<XML::RSS::Feed::Factory>
 
 =cut
 
@@ -96,7 +151,7 @@ sub parse
 	$self->title($rss_parser->{channel}->{title});
 	$self->link($rss_parser->{channel}->{link});
 	$self->_process_items($rss_parser->{items});
-	return 0;
+	return 1;
     }
 }
 
@@ -121,6 +176,7 @@ sub num_headlines
 sub _process_items
 {
     my ($self,$items) = @_;
+    my $hlobj = $self->{hlobj} || "XML::RSS::Headline";
     if ($items) {
 	my @late_breaking_news = ();
 	# the $seen variable fixes and issue where a headline is 
@@ -129,9 +185,7 @@ sub _process_items
 	# in the items array, there cant be any new ones.
 	my $seen = 0;
 	my @headlines = map { 
-	    my $headline = XML::RSS::Feed::Headline->new(
-		headline       => $self->_build_headline($_),
-		url            => $_->{'link'},
+	    my $headline = $hlobj->new(
 		feed           => $self,
 		item           => $_,
 		headline_as_id => $self->headline_as_id,
@@ -140,13 +194,13 @@ sub _process_items
 	    # and don't return all headlines.  in other words
 	    # we initialize them
 	    unless ($self->seen_headline($headline->id) || 
-		    $seen || 
-		    !$self->init) {
+		    $seen || !$self->init) {
 		push @late_breaking_news, $headline 
 	    }
 	    $seen = 1 if $self->seen_headline($headline->id); 
 	    $headline;
 	} @$items;
+
 	$self->init(1);
 	$self->late_breaking_news(\@late_breaking_news);
 	$self->headlines(\@headlines);
@@ -200,20 +254,13 @@ sub _strip_whitespace
     return $string;
 }
 
-# just override this method to get more info for the XML::RSS 'item'
-sub _build_headline
-{
-    my ($self,$item) = @_;
-    return $item->{title}
-}
-
 sub late_breaking_news
 {
     my $self = shift;
     $self->{late_breaking_news} = shift if @_;
     $self->{late_breaking_news} = [] unless $self->{late_breaking_news};
     return wantarray ? @{$self->{late_breaking_news}} : 
-	"@{$self->{late_breaking_news}}";
+	scalar @{$self->{late_breaking_news}};
 }
 
 
@@ -287,6 +334,103 @@ sub headline_as_id
     my $self = shift @_;
     $self->{headline_as_id} = shift if @_;
     $self->{headline_as_id};
+}
+
+sub hlobj
+{
+    my $self = shift @_;
+    $self->{hlobj} = shift if @_;
+    $self->{hlobj};
+}
+
+package XML::RSS::Headline;
+use strict;
+use Digest::MD5 qw(md5_base64);
+use URI;
+use vars qw($VERSION);
+$VERSION = 0.10;
+
+sub new
+{
+    my $class = shift @_;
+    my $self = bless {}, $class;
+    my %args = @_;
+    foreach my $method (keys %args) {
+	if ($self->can($method)) {
+	    $self->$method($args{$method})
+	}
+	else {
+	    die "Invalid argument '$method'";
+	}
+    }
+    return $self;
+}
+
+sub _generate_id
+{
+    my ($self) = @_;
+    # to many problems with urls not staying the same within a source
+    # www.debianplanet.org || debianplanet.org
+    # search.cpan.org || search.cpan.org:80
+    #$self->{id} = md5_base64($self->url . $self->headline);
+
+    # just using headline
+    if ($self->headline_as_id) {
+	$self->{id} = md5_base64($self->{item}->headline);
+    }
+    else {
+	$self->{id} = $self->{item}->{link};
+    }
+}
+
+sub id
+{
+    my ($self) = shift @_;
+    return $self->{id};
+}
+
+sub headline
+{
+    my ($self) = @_;
+    return $self->{item}->{title};
+}
+
+sub multiline_headline
+{
+    my ($self) = @_;
+    my @multiline_headlines = split /\n/, $self->headline;
+    return \@multiline_headlines;
+}
+
+sub url
+{
+    my ($self) = @_;
+    return $self->{item}->{link};
+}
+
+sub headline_as_id
+{
+    my $self = shift @_;
+    $self->{headline_as_id} = shift if @_;
+    $self->{headline_as_id};
+}
+
+sub item
+{
+    my ($self,$item) = @_;
+    if ($item) {
+	$self->{item} = $item;
+	$self->{item}->{link} = URI->new($self->{item}->{link})->canonical;
+	$self->_generate_id;
+    }
+    $self->{item};
+}
+
+sub feed
+{
+    my $self = shift @_;
+    $self->{feed} = shift if @_;
+    $self->{feed};
 }
 
 1;

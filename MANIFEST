@@ -5,6 +5,6 @@ Todo
 Changes
 lib/XML/RSS/Feed.pm
 t/001_load.t
-lib/XML/RSS/Feed/Headline.pm
+lib/XML/RSS/Feed/Factory.pm
 t/002_load.t
 Makefile.PL

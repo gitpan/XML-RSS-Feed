@@ -1,7 +1,7 @@
 package XML::RSS::Feed::Factory;
 use XML::RSS::Feed;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION = 0.02;
+$VERSION = 0.03;
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -14,33 +14,33 @@ XML::RSS::Feed::Factory - Automate XML::RSS::Feed generation
 
 =head1 SYNOPSIS
 
-    use XML::RSS::Feed::Factory;
-    my @feeds = (
-	{
-	    url   => "http://www.jbisbee.com/rdf/",
-	    name  => "jbisbee",
-	    delay => 10,
-	    debug => 1,
-	},
-	{
-	    url   => "http://lwn.net/headlines/rss",
-	    name  => "lwn",
-	    delay => 300,
-	    debug => 1,
-	},
-    );
-    my @feed_objs = feed_factory(@feeds);
+  use XML::RSS::Feed::Factory;
+  my @feeds = (
+      {
+          url   => "http://www.jbisbee.com/rdf/",
+          name  => "jbisbee",
+          delay => 10,
+          debug => 1,
+      },
+      {
+          url   => "http://lwn.net/headlines/rss",
+          name  => "lwn",
+          delay => 300,
+          debug => 1,
+      },
+  );
+  my @feed_objs = feed_factory(@feeds);
 
 =head1 DESCRIPTION
 
-    Object factory to create XML::RSS::Feed factory.
+Object factory to create XML::RSS::Feed factory.
 
 =head1 AUTHOR
 
-	Jeff Bisbee
-	CPAN ID: JBISBEE
-	cpan@jbisbee.com
-	http://www.jbisbee.com/perl/modules/
+Jeff Bisbee
+CPAN ID: JBISBEE
+cpan@jbisbee.com
+http://search.cpan.org/author/JBISBEE/
 
 =head1 COPYRIGHT
 
@@ -52,7 +52,7 @@ LICENSE file included with this module.
 
 =head1 SEE ALSO
 
-L<POE::Component::RSSAggregator>, L<XML::RSS::Feed>, L<XML::RSS::Feed::Headline>, 
+L<POE::Component::RSSAggregator>, L<XML::RSS::Feed> 
 
 =cut
 

@@ -4,9 +4,9 @@
 
 use Test::More tests => 2;
 
-BEGIN { use_ok( 'XML::RSS::Feed::Headline' ); }
+BEGIN { use_ok( 'XML::RSS::Feed' ); }
 
-my $object = XML::RSS::Feed::Headline->new ();
-isa_ok ($object, 'XML::RSS::Feed::Headline');
+my $object = XML::RSS::Headline->new ();
+isa_ok ($object, 'XML::RSS::Headline');
 
 

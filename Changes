@@ -1,5 +1,50 @@
 Revision history for Perl module XML::RSS::Feed
 
-0.01 Wed Mar 19 03:08:44 2003
+0.10 09/06/2003
+	- moved XML::RSS::Feed::Headline into XML::RSS::Feed as XML::RSS::Headline
+	- fixed a return code error on parse - was returning 0 on parse and should
+	  returning 1 (this didn't really affect anything though)
+	- added a 'hlobj' attribute so that you can subclass XML::RSS::Headline to
+	  customize a headline.  An example of this is subclassing XML::RSS::Headline
+	  to create a new headline method that takes advantage of the extra info
+	  found with in the <item> xml block
+
+		package PerlJobs;
+		use strict;
+		use XML::RSS::Feed;
+		use base qw(XML::RSS::Headline);
+
+
+		sub headline
+		{
+		    my ($self) = @_;
+		    # no idea why they use 'http://jobs.perl.org/rss/' as a hash key
+		    my $sub_hash = $self->{item}{'http://jobs.perl.org/rss/'};
+		    return "$self->{item}{title}\n$sub_hash->{company_name} - " . 
+			"$sub_hash->{location}\n" .  "$sub_hash->{hours}, " . 
+			"$sub_hash->{employment_terms}";
+		}
+
+		1;
+
+	  Which produced a more detailed headline than you would normally get.  This 
+	  example is from rssbot on irc.perl.org in channel #news.
+
+	      <rssbot>  + Part Time Perl
+	      <rssbot>    Brian Koontz - United States, TX, Dallas
+	      <rssbot>    Part time, Independent contractor (project-based)
+	      <rssbot>    http://jobs.perl.org/job/950
+
+	- removed _build_headline because this was fixed by sublcassing 
+	  XML::RSS::Headline instead of XML::RSS::Feed;
+	- changed late breaking news to use scalar instead of quote
+	  
+	    scalar @{$self->{late_breaking_news}}; 
+
+	  instead of
+
+	    "@{$self->{late_breaking_news}}"; 	         
+
+0.01 03/19/2003 
 	- original version
 
