@@ -1,5 +1,8 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+1.01
+	- fixed pod error for $feed->parse()
+
 1.00
 	- Broke down and learned how to write tests then wrote a bunch
 	  to make future development and bug fixes fun instead of painful.

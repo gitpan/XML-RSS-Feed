@@ -6,7 +6,7 @@ use Carp qw(confess);
 use Time::HiRes;
 use Storable qw(store retrieve);
 use vars qw($VERSION);
-$VERSION = 1.00;
+$VERSION = 1.01;
 
 =head1 NAME
 
@@ -159,9 +159,10 @@ sub _mark_all_headlines_seen
 
 =over 4
 
-=item C<$feed-E<gt>parse( $xml )>
+=item C<$feed-E<gt>parse( $xml_string )>
 
-This probably shouldn't be in this package. :(
+pass in a xml string to parse with XML::RSS and then call 
+$feed->process() to process the results.
 
 =back
 
