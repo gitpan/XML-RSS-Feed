@@ -1,5 +1,8 @@
 Revision history for Perl module XML::RSS::Feed
 
+0.11 09/06/2003
+	- issue with Module::Release
+
 0.10 09/06/2003
 	- moved XML::RSS::Feed::Headline into XML::RSS::Feed as XML::RSS::Headline
 	- fixed a return code error on parse - was returning 0 on parse and should
