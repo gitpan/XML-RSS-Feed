@@ -1,5 +1,11 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+2.01
+	- Fixed the 011_test_pod and 012_test_pod_coverage tests to correctly detect
+	  if the relative Test::Pod and Test::Pod::Coverage modules are installed
+	  (Thanks to Randal Schwartz for taking the time to shoot me an e-mail and 
+	  pointing it out) :)
+
 2.0
 	- The biggest change in in the tests.  This distrobution is now at 100% coverage!
 	  I found serveral major issues just by painstakingly making sure that each bit

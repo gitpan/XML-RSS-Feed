@@ -3,6 +3,15 @@ use strict;
 use warnings;
 use Test::More;
 
-eval { use Test::Pod::Coverage };
-plan skip_all => "Test::Pod::Coverage required" unless $INC{'Test/Pod/Coverage.pm'};
-eval { all_pod_coverage_ok() };
+BEGIN {
+    eval { require Test::Pod::Coverage; };
+    my $test_pod_coverage = $@ ? 0 : 1;
+    sub TEST_POD_COVERAGE { $test_pod_coverage }
+}
+
+if (TEST_POD_COVERAGE) {
+    eval { Test::Pod::Coverage::all_pod_coverage_ok() };
+}
+else {
+    plan skip_all => "Test::Pod::Coverage required";
+}
