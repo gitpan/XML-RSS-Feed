@@ -6,7 +6,7 @@ use Carp qw(confess);
 use Time::HiRes;
 use Storable qw(store retrieve);
 use vars qw($VERSION);
-$VERSION = 1.02;
+$VERSION = 1.03;
 
 =head1 NAME
 
@@ -709,6 +709,42 @@ sub max_headlines
     $self->{max_headlines};
 }
 
+=head1 DEPRECATED METHODS
+
+=over 4
+
+=item B<$feed-E<gt>failed_to_fetch>
+
+This should was deprecated because, the object shouldn't really know
+anything about fetching, it just processes the results.  This method 
+currently will always return false
+
+=back
+
+=cut
+
+sub failed_to_fetch
+{
+    warn __PACKAGE__ . "::failed_to_fetch has been deprecated";
+    return;
+}
+
+=over 4
+
+=item B<$feed-E<gt>failed_to_parse>
+
+This method was deprecated because, $feed->parse now returns a bool value.
+This method will always return false
+
+=back
+
+=cut
+
+sub failed_to_parse
+{
+    warn __PACKAGE__ . "::failed_to_parse has been deprecated";
+    return;
+}
 
 =head1 AUTHOR
 

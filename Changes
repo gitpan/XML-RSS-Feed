@@ -1,5 +1,14 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+1.03
+	- added failed_to_fetch and failed_to_parse back as deprecated 
+	  methods that return false and issue a warn statement if they're 
+	  used
+	- added a test to make sure that the methods stay and they return false
+
+1.02
+	- changed C<> to B<> because pod looks crap on search.cpan.org
+
 1.01
 	- fixed pod error for $feed->parse()
 

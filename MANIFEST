@@ -14,5 +14,6 @@ t/006_first_seen.t
 t/007_fetch_feed.t
 t/008_store_retrieve.t
 t/009_max_headlines.t
+t/010_deprecated_methods.t
 Makefile.PL
 META.yml                                 Module meta-data (added by MakeMaker)
