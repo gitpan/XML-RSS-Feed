@@ -7,7 +7,7 @@ use Time::HiRes;
 use HTML::Entities;
 use constant DESCRIPTION_HEADLINE => 45; # length of headline when from description
 
-our $VERSION = 2.00;
+our $VERSION = 2.02;
 
 =head1 NAME
 
@@ -23,9 +23,9 @@ headline (when URL uniqueness fails).
 
 =over 4
 
-=item B<C<< XML::RSS::Headline->new( headline =E<gt> $headline, url =E<gt> $url ) >>>
+=item B<< XML::RSS::Headline->new( headline =E<gt> $headline, url =E<gt> $url ) >>
 
-=item B<C<< XML::RSS::Headline->new( item =E<gt> $item ) >>>
+=item B<< XML::RSS::Headline->new( item =E<gt> $item ) >>
 
 A XML::RSS::Headline object can be initialized either with headline/url or 
 with a parse XML::RSS item structure.  The argument 'headline_as_id' is 
@@ -82,7 +82,7 @@ sub new {
 
 =over 4
 
-=item B<C<< $headline->id >>>
+=item B<< $headline->id >>
 
 The id is our unique identifier for a headline/url combination.  Its how we 
 can keep track of which headlines we have seen before and which ones are new.
@@ -103,7 +103,7 @@ sub _cache_id {
 	if $self->{safe_headline}; 
 }
 
-=item B<C<< $headline->multiline_headline >>>
+=item B<< $headline->multiline_headline >>
 
 This method returns the headline as either an array or array 
 reference based on context.  It splits headline on newline characters 
@@ -117,7 +117,7 @@ sub multiline_headline {
     return wantarray ? @multiline_headline : \@multiline_headline;
 }
 
-=item B<C<< $headline->item( $item ) >>>
+=item B<< $headline->item( $item ) >>
 
 Init the object for a parsed RSS item returned by L<XML::RSS>.
 
@@ -131,9 +131,9 @@ sub item {
     $self->description($item->{description});
 }
 
-=item B<C<< $headline->set_first_seen >>>
+=item B<< $headline->set_first_seen >>
 
-=item B<C<< $headline->set_first_seen( Time::HiRes::time() ) >>>
+=item B<< $headline->set_first_seen( Time::HiRes::time() ) >>
 
 Set the time of when the headline was first seen.  If you pass in a value
 it will be used otherwise calls Time::HiRes::time().
@@ -147,7 +147,7 @@ sub set_first_seen {
     return 1;
 }
 
-=item B<C<< $headline->first_seen >>>
+=item B<< $headline->first_seen >>
 
 The time (in epoch seconds) of when the headline was first seen.
 
@@ -158,7 +158,7 @@ sub first_seen {
     return int $self->{hires_timestamp};
 }
 
-=item B<C<< $headline->first_seen_hires >>>
+=item B<< $headline->first_seen_hires >>
 
 The time (in epoch seconds and milliseconds) of when the headline was first seen.
 
@@ -175,9 +175,9 @@ sub first_seen_hires {
 
 =over 4
 
-=item B<C<< $headline->headline >>>
+=item B<< $headline->headline >>
 
-=item B<C<< $headline->headline( $headline ) >>>
+=item B<< $headline->headline( $headline ) >>
 
 The rss headline/title.  HTML::Entities::decode_entities is used when the
 headline is set.  (not sure why XML::RSS doesn't do this)
@@ -188,7 +188,6 @@ sub headline {
     my ($self,$headline) = @_;
     if ($headline) {
 	$self->{headline} = decode_entities $headline;
-	$self->{headline} = $headline;
 	if ($self->{headline_as_id}) {
 	    $self->{safe_headline} = $headline;
 	    $self->_cache_id; 
@@ -197,9 +196,9 @@ sub headline {
     return $self->{headline};
 }
 
-=item B<C<< $headline->url >>>
+=item B<< $headline->url >>
 
-=item B<C<< $headline->url( $url ) >>>
+=item B<< $headline->url( $url ) >>
 
 The rss link/url.  URI->canonical is called to attempt to normalize the URL
 
@@ -212,9 +211,9 @@ sub url {
     return $self->{url};
 }
 
-=item B<C<< $headline-E<gt>description >>>
+=item B<< $headline-E<gt>description >>
 
-=item B<C<< $headline-E<gt>description( $description ) >>>
+=item B<< $headline-E<gt>description( $description ) >>
 
 The description of the RSS headline.
 
@@ -252,9 +251,9 @@ sub _description_headline {
     $self->headline($build_headline .= '...');
 }
 
-=item B<C<< $headline->headline_as_id >>>
+=item B<< $headline->headline_as_id >>
 
-=item B<C<< $headline->headline_as_id( $bool ) >>>
+=item B<< $headline->headline_as_id( $bool ) >>
 
 A bool value that determines whether the URL will be the unique identifier or 
 the if an MD5 checksum of the RSS title will be used instead.  (when the URL
@@ -275,9 +274,9 @@ sub headline_as_id {
     $self->{headline_as_id};
 }
 
-=item B<C<< $headline->timestamp >>>
+=item B<< $headline->timestamp >>
 
-=item B<C<< $headline->timestamp( Time::HiRes::time() ) >>>
+=item B<< $headline->timestamp( Time::HiRes::time() ) >>
 
 A high resolution timestamp that is set using Time::HiRes::time() when the 
 object is created.
@@ -308,7 +307,7 @@ this module.
 
 =head1 SEE ALSO
 
-L<XML::RSS::Feed>, L<POE::Component::RSSAggregator>
+L<XML::RSS::Feed>, L<XML::RSS::Headline::PerlJobs>, L<XML::RSS::Headline::Fark>, L<POE::Component::RSSAggregator>
 
 =cut
 

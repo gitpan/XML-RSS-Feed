@@ -1,5 +1,14 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+2.02
+	- Fixed decode_entities to actually work (added tests to verify)
+	- added XML::RSS::Headline::Fark subclass
+	- added tests for XML::RSS::Headline::Fark subclass
+	- fixed typos in the pod for XML::RSS::Headline::PerlJobs 
+	- fixed pod formating of methods and attributes (C<> looked like crap on 
+	  search.cpan.org)
+	- caught and tested warnings issued by 008_store_retrieve
+
 2.01
 	- Fixed the 011_test_pod and 012_test_pod_coverage tests to correctly detect
 	  if the relative Test::Pod and Test::Pod::Coverage modules are installed

@@ -6,6 +6,7 @@ Changes
 lib/XML/RSS/Feed.pm
 lib/XML/RSS/Headline.pm
 lib/XML/RSS/Headline/PerlJobs.pm
+lib/XML/RSS/Headline/Fark.pm
 t/001_load.t
 t/002_parse.t
 t/003_process.t
@@ -24,5 +25,6 @@ t/015_feed_exceptions.t
 t/016_title_from_description.t
 t/017_perljobs.t
 t/018_debug.t
+t/019_fark.t
 Makefile.PL
 META.yml                                 Module meta-data (added by MakeMaker)

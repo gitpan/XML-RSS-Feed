@@ -3,7 +3,7 @@ use strict;
 use base qw(XML::RSS::Headline);
 use vars qw($VERSION);
 
-$VERSION = 2.00;
+$VERSION = 2.02;
 
 =head1 NAME
 
@@ -17,12 +17,12 @@ the Perl Jobs (jobs.perl.org) RSS feed by simply passing in the C<hlobj> class
 name.
 
     use XML::RSS::Feed;
+    use XML::RSS::Headline::PerlJobs;
     use LWP::Simple qw(get);
-    use PerlJobs;
 
     my $feed = XML::RSS::Feed->new(
 	url   => "http://jobs.perl.org/rss/standard.rss",
-	hlobj => "XML::RSS::Feed::PerlJobs",
+	hlobj => "XML::RSS::Headline::PerlJobs",
 	name  => "perljobs",
 	delay => 60,
     );
@@ -45,7 +45,7 @@ these modules)
 
 =over 4
 
-=item B<C<< $headline->item( $item ) >>>
+=item B<< $headline->item( $item ) >>
 
 Init the object for a parsed RSS item returned by L<XML::RSS>.
 

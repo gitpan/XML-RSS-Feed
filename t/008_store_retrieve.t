@@ -1,12 +1,13 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 31;
+use Test::More tests => 33;
 
 BEGIN { use_ok('XML::RSS::Feed') }
 
 SKIP: {
-    skip "/tmp directory doesn't exist", 30 unless -d "/tmp";
+    skip "/tmp directory doesn't exist", 32 unless -d "/tmp";
+    $SIG{__WARN__} = build_warn("could not cache");
     my $feed_bad_name = XML::RSS::Feed->new (
 	name   => 'test_008/_title',
 	url    => "http://www.jbisbee.com/rsstest",
@@ -181,4 +182,9 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
 </textinput>
 
 </rdf:RDF>|)[$index];
+}
+
+sub build_warn {
+    my @args = @_;
+    return sub { my ($warn) = @_; like($warn, qr/$_/i, $_) for @args };
 }
