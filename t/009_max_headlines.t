@@ -34,14 +34,14 @@ for my $i (1 .. $iterations) {
 	headline => ++$title,
 	url      => ++$url,
     );
-    push @headlines, $hash{headline};
+    unshift @headlines, $hash{headline};
     $feed->create_headline(%hash);
     cmp_ok($feed->num_headlines, '<=', $max_headlines, "Verify max_headlines $i");
 }
 $feed->post_process();
 cmp_ok($feed->num_headlines, '==', $max_headlines, "Verify max_headlines");
 
-@headlines = splice(@headlines,-$max_headlines,$max_headlines);
+@headlines = splice(@headlines,0,$max_headlines);
 
 my @headlines2 = map { $_->headline } $feed->headlines;
 

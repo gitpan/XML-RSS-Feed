@@ -2,7 +2,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME         => 'XML::RSS::Feed',
     VERSION_FROM => 'lib/XML/RSS/Feed.pm',
-    AUTHOR       => 'Jeff Bisbee (cpan@jbisbee.com)',
+    AUTHOR       => 'Jeff Bisbee (jbisbee@cpan.org)',
     ABSTRACT     => 'Encapsulate RSS XML Sources',
     PREREQ_PM    => { 
 	'XML::RSS' => 0,

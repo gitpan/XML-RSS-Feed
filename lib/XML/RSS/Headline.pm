@@ -5,7 +5,7 @@ use URI;
 use Carp qw(cluck confess);
 use Time::HiRes;
 use vars qw($VERSION);
-$VERSION = 1.01;
+$VERSION = 1.02;
 
 =head1 NAME
 
@@ -338,7 +338,7 @@ these modules)
 
 =item CPAN ID: JBISBEE
 
-=item cpan@jbisbee.com
+=item jbisbee@cpan.org
 
 =item http://search.cpan.org/author/JBISBEE/
 

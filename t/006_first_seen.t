@@ -33,6 +33,6 @@ for my $i (1 .. $iterations) {
 $feed->post_process();
 
 my @headlines = $feed->headlines;
-my @sorted_headlines = sort { $a->first_seen_hires <=> $b->first_seen_hires } $feed->headlines;
+my @sorted_headlines = sort { $b->first_seen_hires <=> $a->first_seen_hires } $feed->headlines;
 
 ok(eq_array(\@headlines,\@sorted_headlines),"Validate first_seen_hires");

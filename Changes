@@ -1,5 +1,15 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+1.04
+	- updated my e-mail address to jbisbee@cpan.org
+	- stupid regression, the order of the headline array was reversed
+	  from version 0.25 to 1.00 and has been fixed in 1.04.  This is
+	  a seriously regression so make sure you don't use releases
+	  1.00-1.03.  (I wrote tests for the module AFTER I had the order
+	  reversed, had I written the tests first, the whole bug would 
+	  have been avoided.  I'm now a test driven development 
+	  convert)
+
 1.03
 	- added failed_to_fetch and failed_to_parse back as deprecated 
 	  methods that return false and issue a warn statement if they're 

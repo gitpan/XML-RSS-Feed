@@ -6,7 +6,7 @@ use Carp qw(confess);
 use Time::HiRes;
 use Storable qw(store retrieve);
 use vars qw($VERSION);
-$VERSION = 1.03;
+$VERSION = 1.04;
 
 =head1 NAME
 
@@ -311,12 +311,12 @@ sub create_headline
     my $hlobj = $self->{hlobj} || "XML::RSS::Headline";
     $args{headline_as_id} = $self->{headline_as_id};
     my $headline = $hlobj->new(%args);
-    push (@{$self->{rss_headlines}}, $headline) unless $self->seen_headline($headline->id);
+    unshift (@{$self->{rss_headlines}}, $headline) unless $self->seen_headline($headline->id);
 
     # lets remove the oldest if the new headline put us over the max_headlines limit
     if ($self->max_headlines) {
 	while ($self->num_headlines > $self->max_headlines) {
-	    my $garbage = shift @{$self->{rss_headlines}};
+	    my $garbage = pop @{$self->{rss_headlines}};
 	    # just in case max_headlines < number of headlines in the feed
 	    $self->{rss_headline_ids}{$garbage->id} = 1;
 	    warn "[$self->{name}] Exceeded maximum headlines, removing oldest headline\n" 
@@ -426,7 +426,7 @@ sub _build_dump_structure
     $cached->{link} = $self->link;
     $cached->{last_updated} = $self->{timestamp_hires};
     $cached->{items} = [];
-    for my $headline (reverse $self->headlines) {
+    for my $headline ($self->headlines) {
 	push @{$cached->{items}}, {
 	    headline     => $headline->headline,
 	    url          => $headline->url,
@@ -754,7 +754,7 @@ sub failed_to_parse
 
 =item CPAN ID: JBISBEE
 
-=item cpan@jbisbee.com
+=item jbisbee@cpan.org
 
 =item http://search.cpan.org/author/JBISBEE/
 
