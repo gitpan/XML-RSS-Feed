@@ -1,0 +1,10 @@
+MANIFEST
+LICENSE
+README
+Todo
+Changes
+lib/XML/RSS/Feed.pm
+t/001_load.t
+lib/XML/RSS/Feed/Headline.pm
+t/002_load.t
+Makefile.PL
