@@ -4,7 +4,15 @@ README
 Todo
 Changes
 lib/XML/RSS/Feed.pm
+lib/XML/RSS/Headline.pm
 t/001_load.t
-t/002_load.t
+t/002_parse.t
+t/003_process.t
+t/004_process_items.t
+t/005_create_headline.t
+t/006_first_seen.t
+t/007_fetch_feed.t
+t/008_store_retrieve.t
+t/009_max_headlines.t
 Makefile.PL
 META.yml                                 Module meta-data (added by MakeMaker)

@@ -1,2 +1,5 @@
 TODO list
 
+- XML::RSS::Feed
+    - Should use AUTOLOAD for basic set/get methods
+- XML::RSS::Headline

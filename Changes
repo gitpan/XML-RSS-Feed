@@ -1,20 +1,92 @@
-Revision history for Perl module XML::RSS::Feed
+Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
-0.25 03/16/2004
+1.00
+	- Broke down and learned how to write tests then wrote a bunch
+	  to make future development and bug fixes fun instead of painful.
+	  (and kicked myself for not doing it sooner)
+	- Holy crap that is pod documention for every public method for
+	  both XML::RSS::Feed and XML::RSS::Headline
+	- XML::RSS::Headlines have a new attribute 'description'
+	- Caching is now done using storables rather than using the XML.
+	  With headlines the title, url, description, and first_seen timestamp
+	  are cached, and with feeds, the channel title, url, and last_updated
+	  are cached.
+	- New timestamps on feeds and headlines.  The ones on feeds are set
+	  everytime the feed is updated and the ones on headlines are only
+	  set when the headline is first seen.
+	- Previously the headline limit was set by the RSS feed now you can 
+	  as many headlines as you have memory.  You can set a limit by
+	  setting the new attribute max_headlines
+	- added new methods to support not using XML::RSS to parse feeds
+	  you can use the module 4 ways now
+
+	      1.  $feed->parse($xml_string);
+	      
+	      2.  $feed->process($items_array_ref,$feed_title,$feed_link);
+	      
+	      3.  $feed->pre_process;
+		  $feed->process_items($items_array_ref);
+		  $feed->post_process;
+
+	      4.  $feed->pre_process;
+		  $feed->create_headline(
+		      headline => "headline", 
+		      url      => "http://..."
+		  );
+		  $feed->post_process;
+
+	  This was implemented to support using POE::Filter::XML as a no blocking
+	  way to parse feeds rather than using the block XML::RSS via 
+	  PoCo::RSSAggregator
+	  
+	- removed failed_to_parse and failed_to_fetch
+	- changed default delay from 600 to 3600
+	- added description set/get method to XML::RSS::Headline
+	- changed XML::RSS::Feed->headlines to check 'wantarray' so you get
+	  either an array or an array ref based on context.
+	- you can now create a XML::RSS::Headline object by either passing in
+	  an XML::RSS item datastructure 
+	  
+		my $headline = XML::RSS::Headline->new(
+		    item => { 
+			title => "blah", 
+	                link  => "http://blah.blash", 
+			more  => "..."
+		    },
+		    headline_as_id => 1, # bool value
+		);
+
+	  or you can just pass in a headline and url which makes a lot more 
+	  sense.  (LotR asked me why I did initated the object with the 
+	  XML::RSS item structure...  I did it because I'm LAZY ok) :P
+
+		my $headline = XML::RSS::Headline->new(
+		    headline       => "blah", 
+	            url            => "http://blah.blash", 
+		    headline_as_id => 1, # bool value
+		);
+
+	- Moved XML::RSS::Headline to its own package and wrote actual
+	  pod to describes its accessors.  XML::RSS::Headline objects are
+	  returned by XML::RSS::Feed->late_breaking_news and merlyn suggested
+	  it would be nice to see what methods could be called upon the
+	  the returned headline object.
+
+0.25
 	- added Clone 0.13 dependency
 	- upped version to 0.25
 
-0.2 01/27/2004
+0.20
 	- added new param 'tmpdir'.  The module will now attempt to load 
 	  cached XML when this param is given.  The XML is held in memory
 	  until the DESTROY method is called and the XML is written to the
 	  tmpdir if it is defined.
 	- better debugging if 'debug' is defined.
 
-0.11 09/06/2003
+0.11
 	- issue with Module::Release
 
-0.10 09/06/2003
+0.10
 	- moved XML::RSS::Feed::Headline into XML::RSS::Feed as XML::RSS::Headline
 	- fixed a return code error on parse - was returning 0 on parse and should
 	  returning 1 (this didn't really affect anything though)
@@ -23,11 +95,10 @@ Revision history for Perl module XML::RSS::Feed
 	  to create a new headline method that takes advantage of the extra info
 	  found with in the <item> xml block
 
-		package PerlJobs;
+		package XML::RSS::Headline::PerlJobs;
 		use strict;
 		use XML::RSS::Feed;
 		use base qw(XML::RSS::Headline);
-
 
 		sub headline
 		{
@@ -59,6 +130,6 @@ Revision history for Perl module XML::RSS::Feed
 
 	    "@{$self->{late_breaking_news}}"; 	         
 
-0.01 03/19/2003 
+0.01
 	- original version
 
