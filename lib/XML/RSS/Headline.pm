@@ -5,7 +5,7 @@ use URI;
 use Carp qw(cluck confess);
 use Time::HiRes;
 use vars qw($VERSION);
-$VERSION = 1.02;
+$VERSION = 1.05;
 
 =head1 NAME
 

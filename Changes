@@ -1,5 +1,9 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+1.05	- Fixed caching issue.  Now cache in post process after every fetch
+	  instead of on object destroy (which was broken) :(
+	- Did "pod2text XML/RSS/Feed.pm > README"
+
 1.04
 	- updated my e-mail address to jbisbee@cpan.org
 	- stupid regression, the order of the headline array was reversed

@@ -6,7 +6,7 @@ use Carp qw(confess);
 use Time::HiRes;
 use Storable qw(store retrieve);
 use vars qw($VERSION);
-$VERSION = 1.04;
+$VERSION = 1.05;
 
 =head1 NAME
 
@@ -395,15 +395,15 @@ sub late_breaking_news
 
 =over 4
 
-=item B<$feed-E<gt>DESTROY>
+=item B<$feed-E<gt>cache>
 
-If tmpdir is defined the rss XML is cached when the object is destoryed.
+If tmpdir is defined the rss info is cached.
 
 =back
 
 =cut
 
-sub DESTROY
+sub cache
 {
     my ($self) = @_;
     return unless $self->tmpdir;

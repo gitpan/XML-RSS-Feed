@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use Test::More tests => 19;
+use lib '../lib';
 
 BEGIN { 
     use_ok( 'XML::RSS::Feed', 'loaded XML::RSS::Feed' );
@@ -34,7 +35,7 @@ SKIP: {
     my @headlines_old = map { $_->headline } $feed->headlines;
     my $num_headlines = $feed->num_headlines;
     my @seen_old = map { $_->first_seen_hires } $feed->headlines;
-    undef $feed;
+    $feed->cache;
     $feed2 = XML::RSS::Feed->new (
 	name   => 'test_008',
 	url    => "http://www.jbisbee.com/rsstest",
@@ -53,5 +54,4 @@ SKIP: {
 	my $num = $i + 1;
 	cmp_ok($seen_old[$i], '==', $seen_new[$i], "Compare headline $num timestamp_hires");
     }
-    undef $feed2
 }
