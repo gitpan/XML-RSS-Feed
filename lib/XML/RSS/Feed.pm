@@ -6,7 +6,7 @@ use XML::RSS::Headline;
 use Time::HiRes;
 use Storable qw(store retrieve);
 
-our $VERSION = 2.03;
+our $VERSION = 2.04;
 
 =head1 NAME
 
@@ -645,7 +645,7 @@ this module.
 
 =head1 SEE ALSO
 
-L<XML::RSS::Headline>, L<XML::RSS::Headline::PerlJobs>, L<XML::RSS::Headline::Fark>, L<POE::Component::RSSAggregator>
+L<XML::RSS::Headline>, L<XML::RSS::Headline::PerlJobs>, L<XML::RSS::Headline::Fark>, L<XML::RSS::Headline::UsePerlJournals>, L<POE::Component::RSSAggregator>
 
 =cut
 

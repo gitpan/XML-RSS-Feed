@@ -1,5 +1,9 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+2.04
+	- Just added a use Perl; journals sub class example
+	  XML::RSS::Headline::UsePerlJournals, which
+
 2.03
 	- Needed to use URI::Escape qw(uri_unescape) on XML::RSS::Headline::Fark
 	  URLs.

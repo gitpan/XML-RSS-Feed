@@ -4,7 +4,7 @@ use warnings;
 use base qw(XML::RSS::Headline);
 use URI::Escape qw(uri_unescape);
 
-our $VERSION = 2.03;
+our $VERSION = 2.04;
 
 =head1 NAME
 
@@ -20,9 +20,9 @@ blocks in the headline
     use LWP::Simple qw(get);
 
     my $feed = XML::RSS::Feed->new(
+	name  => "fark",
 	url   => "http://www.pluck.com/rss/fark.rss",
 	hlobj => "XML::RSS::Headline::Fark",
-	name  => "fark",
     );
 
     while (1) {
@@ -83,7 +83,7 @@ this module.
 
 =head1 SEE ALSO
 
-L<XML::RSS::Feed>, L<XML::RSS::Headline>, L<XML::RSS::Headline::PerlJobs>, L<POE::Component::RSSAggregator>
+L<XML::RSS::Feed>, L<XML::RSS::Headline>, L<XML::RSS::Headline::PerlJobs>, L<XML::RSS::Headline::UsePerlJournals>, L<POE::Component::RSSAggregator>
 
 =cut
 

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use base qw(XML::RSS::Headline);
 
-our $VERSION = 2.03;
+our $VERSION = 2.04;
 
 =head1 NAME
 
@@ -21,10 +21,9 @@ name.
     use LWP::Simple qw(get);
 
     my $feed = XML::RSS::Feed->new(
+	name  => "perljobs",
 	url   => "http://jobs.perl.org/rss/standard.rss",
 	hlobj => "XML::RSS::Headline::PerlJobs",
-	name  => "perljobs",
-	delay => 60,
     );
 
     while (1) {
@@ -83,7 +82,7 @@ this module.
 
 =head1 SEE ALSO
 
-L<XML::RSS::Feed>, L<XML::RSS::Headline>, L<POE::Component::RSSAggregator>
+L<XML::RSS::Feed>, L<XML::RSS::Headline>, L<XML::RSS::Headline::Fark>, L<XML::RSS::Headline::UsePerlJournals>, L<POE::Component::RSSAggregator>
 
 =cut
 
