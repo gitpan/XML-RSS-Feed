@@ -4,7 +4,7 @@ use XML::RSS;
 use XML::RSS::Feed::Factory;
 use XML::RSS::Feed::Headline;
 use vars qw($VERSION);
-$VERSION     = 0.01;
+$VERSION = 0.02;
 
 =head1 NAME
 
@@ -40,20 +40,6 @@ XML::RSS::Feed - Encapsulate RSS XML New Items Watching
 ATTENTION! - If you want a non-blocking way to watch multiple RSS sources
 with one process.  Use POE::Component::RSSAggregator
 
-XML
-
-=head1 USAGE
-
-
-
-=head1 BUGS
-
-
-
-=head1 SUPPORT
-
-
-
 =head1 AUTHOR
 
 	Jeff Bisbee
@@ -72,7 +58,7 @@ LICENSE file included with this module.
 
 =head1 SEE ALSO
 
-perl(1).
+L<POE::Component::RSSAggregator>, L<XML::RSS::Feed::Factory>, L<XML::RSS::Feed::Headline>
 
 =cut
 

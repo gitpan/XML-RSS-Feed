@@ -2,11 +2,8 @@ package XML::RSS::Feed::Headline;
 use strict;
 use Digest::MD5 qw(md5_base64);
 use URI;
-
-BEGIN {
-    use vars qw ($VERSION);
-    $VERSION     = 0.01;
-}
+use vars qw($VERSION);
+$VERSION = 0.02;
 
 =head1 NAME
 
@@ -14,30 +11,14 @@ XML::RSS::Feed::Headline - Encapsulate RSS Items
 
 =head1 SYNOPSIS
 
-  use XML::RSS::Feed::Headline
-  blah blah blah
-
+    The XML::RSS::Feed::Headline object encapsulates headline creation 
+    and keeps ids (either the urls or MD5 generated from the headlines)
+    to keep track of which urls have been 'seen' and which urls have 
+    not yeat been 'seen'
 
 =head1 DESCRIPTION
 
-Stub documentation for this module was created by ExtUtils::ModuleMaker.
-It looks like the author of the extension was negligent enough
-to leave the stub unedited.
-
-Blah blah blah.
-
-
-=head1 USAGE
-
-
-
-=head1 BUGS
-
-
-
-=head1 SUPPORT
-
-
+    This module is used by XML::RSS::Feed
 
 =head1 AUTHOR
 
@@ -54,10 +35,9 @@ it and/or modify it under the same terms as Perl itself.
 The full text of the license can be found in the
 LICENSE file included with this module.
 
-
 =head1 SEE ALSO
 
-perl(1).
+L<XML::RSS::Feed>, L<XML::RSS::Feed::Factory>, L<POE::Component::RSSAggregator>
 
 =cut
 
@@ -74,7 +54,6 @@ sub new
 	    die "Invalid argument '$method'";
 	}
     }
-    $self->_generate_id if $self->headline && $self->url;
     return $self;
 }
 
