@@ -1,5 +1,12 @@
 Revision history for Perl module XML::RSS::Feed
 
+0.2 01/27/2004
+	- added new param 'tmpdir'.  The module will now attempt to load 
+	  cached XML when this param is given.  The XML is held in memory
+	  until the DESTROY method is called and the XML is written to the
+	  tmpdir if it is defined.
+	- better debugging if 'debug' is defined.
+
 0.11 09/06/2003
 	- issue with Module::Release
 

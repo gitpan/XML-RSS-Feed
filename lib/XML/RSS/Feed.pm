@@ -1,9 +1,8 @@
 package XML::RSS::Feed;
 use strict;
 use XML::RSS;
-use XML::RSS::Feed::Factory;
 use vars qw($VERSION);
-$VERSION = 0.11;
+$VERSION = 0.2;
 
 =head1 NAME
 
@@ -22,9 +21,10 @@ A quick non-POE example:
   use LWP::Simple;
 
   my %source = (
-      url   => "http://www.jbisbee.com/rdf/",
-      name  => "jbisbee",
-      delay => 10,
+      url    => "http://www.jbisbee.com/rdf/",
+      name   => "jbisbee",
+      delay  => 10,
+      tmpdir => "/tmp", # optional caching
   );
   my $feed = XML::RSS::Feed->new(%source);
 
@@ -36,7 +36,9 @@ A quick non-POE example:
               print $headline->headline . "\n";
           }
       }
-      sleep($feed->delay);
+      # this sucks (and blocks) 
+      # use the POE::Component::RSSAggregator module instead!
+      sleep($feed->delay); 
   }
 
 An example of subclassing XML::RSS::Headline
@@ -113,7 +115,7 @@ LICENSE file included with this module.
 
 =head1 SEE ALSO
 
-L<POE::Component::RSSAggregator>, L<XML::RSS::Feed::Factory>
+L<POE::Component::RSSAggregator>
 
 =cut
 
@@ -130,24 +132,44 @@ sub new
 	    die "Invalid argument '$method'";
 	}
     }
+    $self->_load_cached_headlines if $self->{tmpdir};
     $self->{delay} = 600 unless $self->{delay};
     return $self;
+}
+
+sub _load_cached_headlines
+{
+    my ($self) = @_;
+    if ($self->{tmpdir}) {
+	my $filename = $self->{tmpdir} . '/' . $self->name;
+	if (-T $filename) {
+	    open(my $fh, $filename);
+	    my $xml = do { local $/, <$fh> };
+	    close $fh;
+	    warn "[$self->{name}] Loaded Cached RSS XML\n" if $self->{debug};
+	    $self->parse($xml);
+	}
+	else {
+	    warn "[$self->{name}] !! Failed to Load Cached RSS XML\n" if $self->{debug};
+	}
+    }
 }
 
 sub parse
 {
     my ($self,$xml) = @_;
+    $self->{xml} = $xml;
     my $rss_parser = XML::RSS->new();
     eval {
 	$rss_parser->parse($xml);
     };
     if ($@) {
-	warn "[!!] Failed to parse " . $self->url . "\n" if $self->debug;
+	warn "[$self->{name}] !! Failed to parse RSS XML -> $@\n" if $self->debug;
 	$self->failed_to_parse(1);
 	return 0;
     }
     else {
-	warn "[--] Parsed " . $self->url . "\n" if $self->debug;
+	warn "[$self->{name}] Parsed RSS XML\n" if $self->debug;
 	$self->title($rss_parser->{channel}->{title});
 	$self->link($rss_parser->{channel}->{link});
 	$self->_process_items($rss_parser->{items});
@@ -186,7 +208,7 @@ sub _process_items
 	my $seen = 0;
 	my @headlines = map { 
 	    my $headline = $hlobj->new(
-		feed           => $self,
+		#feed           => $self, # why oh why did I do this?!?
 		item           => $_,
 		headline_as_id => $self->headline_as_id,
 	    );
@@ -206,13 +228,11 @@ sub _process_items
 	$self->headlines(\@headlines);
 
 	# turn on 'debug' to figure things out
-	warn "[--] " . @headlines . " Headlines Found for " . 
-	    $self->url . "\n" if $self->debug;
-	warn "[--] " . @late_breaking_news . " New Headlines Found for " . 
-	    $self->url . "\n" if $self->debug;
+	warn "[$self->{name}] " . @headlines . " Headlines Found\n" if $self->debug;
+	warn "[$self->{name}] " . @late_breaking_news . " New Headlines Found\n" if $self->debug;
     }
     else {
-	warn "[!!] No Headlines Found for " . $self->url . "\n" if $self->debug;
+	warn "[$self->{name}] !! No Headlines Found\n" if $self->debug;
     }
 }
 
@@ -237,9 +257,9 @@ sub human_readable_delay
 {
     my ($self) = @_;
     my %lookup = (
-	'300'  => '5 mintues',
-	'600'  => '10 mintues',
-	'900'  => '15 mintues',
+	'300'  => '5 minutes',
+	'600'  => '10 minutes',
+	'900'  => '15 minutes',
 	'1800' => 'half an hour',
 	'3600' => 'hour',
     );
@@ -343,10 +363,36 @@ sub hlobj
     $self->{hlobj};
 }
 
+sub tmpdir
+{
+    my $self = shift @_;
+    $self->{tmpdir} = shift if @_;
+    $self->{tmpdir};
+}
+
+sub DESTROY
+{
+    my $self = shift;
+    return unless $self->tmpdir;
+    if (-d $self->tmpdir && $self->{xml}) {
+	my $tmp_filename = $self->tmpdir . '/' . $self->{name};
+	if (open(my $fh, ">$tmp_filename")) {
+	    print $fh $self->{xml};
+	    close $fh;
+	    warn "[$self->{name}] Cached RSS XML to $tmp_filename\n" if $self->debug;
+	}
+	else {
+	    warn "[$self->{name}] Could not cache RSS XML to $tmp_filename\n" if $self->debug;
+	}
+    }
+}
+
+
 package XML::RSS::Headline;
 use strict;
 use Digest::MD5 qw(md5_base64);
 use URI;
+use Clone qw(clone);
 use vars qw($VERSION);
 $VERSION = 0.10;
 
@@ -419,18 +465,19 @@ sub item
 {
     my ($self,$item) = @_;
     if ($item) {
-	$self->{item} = $item;
+	$self->{item} = clone $item;
 	$self->{item}->{link} = URI->new($self->{item}->{link})->canonical;
 	$self->_generate_id;
     }
     $self->{item};
 }
 
-sub feed
-{
-    my $self = shift @_;
-    $self->{feed} = shift if @_;
-    $self->{feed};
-}
+# No idea why this is here
+#sub feed
+#{
+#    my $self = shift @_;
+#    $self->{feed} = shift if @_;
+#    $self->{feed};
+#}
 
 1;
