@@ -5,7 +5,7 @@ use URI;
 use Carp qw(cluck confess);
 use Time::HiRes;
 use vars qw($VERSION);
-$VERSION = 1.00;
+$VERSION = 1.01;
 
 =head1 NAME
 
@@ -21,9 +21,9 @@ headline (when URL uniqueness fails).
 
 =over 4
 
-=item C<XML::RSS::Headline-E<gt>new( headline =E<gt> $headline, url =E<gt> $url )>
+=item B<XML::RSS::Headline-E<gt>new( headline =E<gt> $headline, url =E<gt> $url )>
 
-=item C<XML::RSS::Headline-E<gt>new( item =E<gt> $item )>
+=item B<XML::RSS::Headline-E<gt>new( item =E<gt> $item )>
 
 A XML::RSS::Headline object can be initialized either with headline/url or 
 with a parse XML::RSS item structure.  The argument 'headline_as_id' is 
@@ -64,12 +64,12 @@ sub new
 
 =over 4
 
-=item C<$headline-E<gt>id>
+=item B<$headline-E<gt>id>
 
 The id is our unique identifier for a headline/url combination.  Its how we 
 can keep track of which headlines we have seen before and which ones are new.
 The id is either the URL or a MD5 checksum generated from the headline text 
-(if C<$headline-E<gt>headline_as_id> is true);
+(if B<$headline-E<gt>headline_as_id> is true);
 
 =back
 
@@ -90,7 +90,7 @@ sub _cache_id
 
 =over 4
 
-=item C<$headline-E<gt>multiline_headline>
+=item B<$headline-E<gt>multiline_headline>
 
 This method returns the headline as either an array or array 
 reference based on context.  It splits headline on newline characters 
@@ -109,7 +109,7 @@ sub multiline_headline
 
 =over 4
 
-=item C<$headline-E<gt>item( $item )>
+=item B<$headline-E<gt>item( $item )>
 
 Init the object for a parsed RSS item returned by L<XML::RSS>.
 
@@ -129,9 +129,9 @@ sub item
 
 =over 4
 
-=item C<$headline-E<gt>set_first_seen>
+=item B<$headline-E<gt>set_first_seen>
 
-=item C<$headline-E<gt>set_first_seen( Time::HiRes::time )>
+=item B<$headline-E<gt>set_first_seen( Time::HiRes::time )>
 
 Set the time of when the headline was first seen.  If you pass in a value
 it will be used otherwise calls Time::HiRes::time.
@@ -148,7 +148,7 @@ sub set_first_seen
 
 =over 4
 
-=item C<$headline-E<gt>first_seen>
+=item B<$headline-E<gt>first_seen>
 
 The time (in epoch seconds) of when the headline was first seen.
 
@@ -164,7 +164,7 @@ sub first_seen
 
 =over 4
 
-=item C<$headline-E<gt>first_seen_hires>
+=item B<$headline-E<gt>first_seen_hires>
 
 The time (in epoch seconds and milliseconds) of when the headline was first seen.
 
@@ -182,9 +182,9 @@ sub first_seen_hires
 
 =over 4
 
-=item C<$headline-E<gt>headline>
+=item B<$headline-E<gt>headline>
 
-=item C<$headline-E<gt>headline( $headline )>
+=item B<$headline-E<gt>headline( $headline )>
 
 The rss headline/title
 
@@ -200,9 +200,9 @@ sub headline
     return $self->{headline};
 }
 
-=item C<$headline-E<gt>url>
+=item B<$headline-E<gt>url>
 
-=item C<$headline-E<gt>url( $url )>
+=item B<$headline-E<gt>url( $url )>
 
 The rss link/url.  URI->canonical is called to attempt to normalize the URL
 
@@ -216,9 +216,9 @@ sub url
     return $self->{url};
 }
 
-=item C<$headline-E<gt>description>
+=item B<$headline-E<gt>description>
 
-=item C<$headline-E<gt>description( $description )>
+=item B<$headline-E<gt>description( $description )>
 
 The description of the RSS headline.
 
@@ -232,9 +232,9 @@ sub description
 }
 
 
-=item C<$headline-E<gt>headline_as_id>
+=item B<$headline-E<gt>headline_as_id>
 
-=item C<$headline-E<gt>headline_as_id( $bool )>
+=item B<$headline-E<gt>headline_as_id( $bool )>
 
 A bool value that determines whether the URL will be the unique identifier or 
 the if an MD5 checksum of the RSS title will be used instead.  (when the URL
@@ -256,9 +256,9 @@ sub headline_as_id
     $self->{headline_as_id};
 }
 
-=item C<$headline-E<gt>timestamp>
+=item B<$headline-E<gt>timestamp>
 
-=item C<$headline-E<gt>timestamp( Time::HiRes::time() )>
+=item B<$headline-E<gt>timestamp( Time::HiRes::time() )>
 
 A high resolution timestamp that is set using Time::HiRes::time when the 
 object is created.
@@ -298,8 +298,8 @@ the Perl Jobs (jobs.perl.org) RSS feed.
     }
 
 Here is PerlJobs.pm which is subclassed from XML::RSS::Headline in
-this example and C<$headline-E<gt>item> is redefined to init 
-C<$self-E<gt>headline> with more nested info located with in the 
+this example and B<$headline-E<gt>item> is redefined to init 
+B<$self-E<gt>headline> with more nested info located with in the 
 parsed RSS item structure.  (Notice that we're just concatinating 
 bits of info with newlines to seperate the lines.
 

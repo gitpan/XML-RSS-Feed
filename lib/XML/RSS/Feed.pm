@@ -6,7 +6,7 @@ use Carp qw(confess);
 use Time::HiRes;
 use Storable qw(store retrieve);
 use vars qw($VERSION);
-$VERSION = 1.01;
+$VERSION = 1.02;
 
 =head1 NAME
 
@@ -14,8 +14,8 @@ XML::RSS::Feed - Encapsulate RSS XML New Items Watching
 
 =head1 SYNOPSIS
 
-A quick and dirty non-POE example that uses a blocking C<sleep>.  The
-magic is in the C<late_breaking_news> method that returns only 
+A quick and dirty non-POE example that uses a blocking B<sleep>.  The
+magic is in the B<late_breaking_news> method that returns only 
 headlines it hasn't seen.
 
     use XML::RSS::Feed;
@@ -42,7 +42,7 @@ with one process use POE::Component::RSSAggregator.
 
 =over 4
 
-=item C<XML::RSS::Feed-E<gt>new( url =E<gt> $url, name =E<gt> $name )>
+=item B<XML::RSS::Feed-E<gt>new( url =E<gt> $url, name =E<gt> $name )>
 
 =over 4
 
@@ -50,11 +50,11 @@ with one process use POE::Component::RSSAggregator.
 
 =over 4
 
-=item C<name>
+=item B<name>
 
 Identifier for the RSS feed.
 
-=item C<url>
+=item B<url>
 
 The URL to the RSS feed
 
@@ -64,23 +64,23 @@ The URL to the RSS feed
 
 =over 4
 
-=item C<delay>
+=item B<delay>
 
 Number of seconds between updates (defaults to 600)
 
-=item C<tmpdir>
+=item B<tmpdir>
 
 Optional directory to cache a feed L<Storable> file to keep persistance between instances.
 
-=item C<debug>
+=item B<debug>
 
 Boolean value to turn debuging on.
 
-=item C<headline_as_id>
+=item B<headline_as_id>
 
 Boolean value to use the headline as the id when URL isn't unique within a feed.
 
-=item C<hlobj>
+=item B<hlobj>
 
 A class name sublcassed from L<XML::RSS::Headline>
 
@@ -159,7 +159,7 @@ sub _mark_all_headlines_seen
 
 =over 4
 
-=item C<$feed-E<gt>parse( $xml_string )>
+=item B<$feed-E<gt>parse( $xml_string )>
 
 pass in a xml string to parse with XML::RSS and then call 
 $feed->process() to process the results.
@@ -189,13 +189,13 @@ sub parse
 
 =over 4
 
-=item C<$feed-E<gt>process( $items, $title, $link )>
+=item B<$feed-E<gt>process( $items, $title, $link )>
 
-=item C<$feed-E<gt>process( $items, $title )>
+=item B<$feed-E<gt>process( $items, $title )>
 
-=item C<$feed-E<gt>process( $items )>
+=item B<$feed-E<gt>process( $items )>
 
-Calls C<pre_process>, C<process_items>, C<post_process>, C<title>, and C<link>
+Calls B<pre_process>, B<process_items>, B<post_process>, B<title>, and B<link>
 methods to process the parsed results of an RSS XML feed.
 
 =over 4
@@ -233,7 +233,7 @@ sub process
 
 =over 4
 
-=item C<$feed-E<gt>pre_process>
+=item B<$feed-E<gt>pre_process>
 
 Mark all headlines from previous run as seen.
 
@@ -249,7 +249,7 @@ sub pre_process
 
 =over 4
 
-=item C<$feed-E<gt>process_items( $items )>
+=item B<$feed-E<gt>process_items( $items )>
 
 Turn an array refs of hash refs into L<XML::RSS::Headline> objects and added to the
 internal list of headlines.
@@ -271,7 +271,7 @@ sub process_items
 
 =over 4
 
-=item C<$feed-E<gt>post_process>
+=item B<$feed-E<gt>post_process>
 
 Post process cleanup and debug messages.
 
@@ -296,10 +296,10 @@ sub post_process
 
 =over 4
 
-=item C<$feed-E<gt>create_headline( %args)>
+=item B<$feed-E<gt>create_headline( %args)>
 
 Create a new XML::RSS::Headline object and add it to the interal list.  Check
-XML::RSS::Headline->new() for acceptable values for C<%args>.
+XML::RSS::Headline->new() for acceptable values for B<%args>.
 
 =back
 
@@ -327,7 +327,7 @@ sub create_headline
 
 =over 4
 
-=item C<$feed-E<gt>num_headlines>
+=item B<$feed-E<gt>num_headlines>
 
 Returns the number of headlines for the feed.
 
@@ -343,7 +343,7 @@ sub num_headlines
 
 =over 4
 
-=item C<$feed-E<gt>seen_headline( $id )>
+=item B<$feed-E<gt>seen_headline( $id )>
 
 Just a boolean test to see if we've seen a headline or not.
 
@@ -360,7 +360,7 @@ sub seen_headline
 
 =over 4
 
-=item C<$feed-E<gt>headlines>
+=item B<$feed-E<gt>headlines>
 
 Returns an array or array reference (based on context) of XML::RSS::Headline objects
 
@@ -376,7 +376,7 @@ sub headlines
 
 =over 4
 
-=item C<$feed-E<gt>late_breaking_news>
+=item B<$feed-E<gt>late_breaking_news>
 
 Returns an array or the number of elements (based on context) of the 
 B<latest> XML::RSS::Headline objects.
@@ -395,7 +395,7 @@ sub late_breaking_news
 
 =over 4
 
-=item C<$feed-E<gt>DESTROY>
+=item B<$feed-E<gt>DESTROY>
 
 If tmpdir is defined the rss XML is cached when the object is destoryed.
 
@@ -439,9 +439,9 @@ sub _build_dump_structure
 
 =over 4
 
-=item C<$feed-E<gt>set_last_updated>
+=item B<$feed-E<gt>set_last_updated>
 
-=item C<$feed-E<gt>set_last_updated( Time::HiRes::time )>
+=item B<$feed-E<gt>set_last_updated( Time::HiRes::time )>
 
 Set the time of when the feed was last processed.  If you pass in a value
 it will be used otherwise calls Time::HiRes::time.
@@ -458,7 +458,7 @@ sub set_last_updated
 
 =over 4
 
-=item C<$feed-E<gt>last_updated>
+=item B<$feed-E<gt>last_updated>
 
 The time (in epoch seconds) of when the feed was last processed.
 
@@ -474,7 +474,7 @@ sub last_updated
 
 =over 4
 
-=item C<$feed-E<gt>last_updated_hires>
+=item B<$feed-E<gt>last_updated_hires>
 
 The time (in epoch seconds and milliseconds) of when the feed was last processed.
 
@@ -492,9 +492,9 @@ sub last_updated_hires
 
 =over 4
 
-=item C<$feed-E<gt>title>
+=item B<$feed-E<gt>title>
 
-=item C<$feed-E<gt>title( $title )>
+=item B<$feed-E<gt>title( $title )>
 
 The title of the RSS feed.
 
@@ -514,9 +514,9 @@ sub title
 
 =over 4
 
-=item C<$feed-E<gt>debug>
+=item B<$feed-E<gt>debug>
 
-=item C<$feed-E<gt>debug( $bool )>
+=item B<$feed-E<gt>debug( $bool )>
 
 Turn on debugging messages
 
@@ -533,9 +533,9 @@ sub debug
 
 =over 4
 
-=item C<$feed-E<gt>init>
+=item B<$feed-E<gt>init>
 
-=item C<$feed-E<gt>init( $bool )>
+=item B<$feed-E<gt>init( $bool )>
 
 init is used so that we just load the current headlines and don't return all 
 headlines.  in other words we initialize them.  Takes a boolean argument.
@@ -553,9 +553,9 @@ sub init
 
 =over 4
 
-=item C<$feed-E<gt>name>
+=item B<$feed-E<gt>name>
 
-=item C<$feed-E<gt>name( $name )>
+=item B<$feed-E<gt>name( $name )>
 
 The identifier of an RSS feed.
 
@@ -572,9 +572,9 @@ sub name
 
 =over 4
 
-=item C<$feed-E<gt>delay>
+=item B<$feed-E<gt>delay>
 
-=item C<$feed-E<gt>delay( $seconds )>
+=item B<$feed-E<gt>delay( $seconds )>
 
 Number of seconds between updates.
 
@@ -591,9 +591,9 @@ sub delay
 
 =over 4
 
-=item C<$feed-E<gt>link>
+=item B<$feed-E<gt>link>
 
-=item C<$feed-E<gt>link( $rss_channel_url )>
+=item B<$feed-E<gt>link( $rss_channel_url )>
 
 The url in the RSS feed with a link back to the site where the RSS feed came from.
 
@@ -610,9 +610,9 @@ sub link
 
 =over 4
 
-=item C<$feed-E<gt>url>
+=item B<$feed-E<gt>url>
 
-=item C<$feed-E<gt>url( $url )>
+=item B<$feed-E<gt>url( $url )>
 
 The url in the RSS feed with a link back to the site where the RSS feed came from.
 
@@ -629,9 +629,9 @@ sub url
 
 =over 4
 
-=item C<$feed-E<gt>headline_as_id>
+=item B<$feed-E<gt>headline_as_id>
 
-=item C<$feed-E<gt>headline_as_id( $bool )>
+=item B<$feed-E<gt>headline_as_id( $bool )>
 
 Within some RSS feeds the URL may not always be unique, in these cases
 you can use the headline as the unique id.  The id is used to check whether
@@ -652,9 +652,9 @@ sub headline_as_id
 
 =over 4
 
-=item C<$feed-E<gt>hlobj>
+=item B<$feed-E<gt>hlobj>
 
-=item C<$feed-E<gt>hlobj( $class )>
+=item B<$feed-E<gt>hlobj( $class )>
 
 Ablity to change use a subclass XML::RSS::Headline package to encapsulate
 the RSS headlines.  (See Perl Jobs example in L<XML::RSS::Headline>).  This
@@ -673,9 +673,9 @@ sub hlobj
 
 =over 4
 
-=item C<$feed-E<gt>tmpdir>
+=item B<$feed-E<gt>tmpdir>
 
-=item C<$feed-E<gt>tmpdir( $tmpdir )>
+=item B<$feed-E<gt>tmpdir( $tmpdir )>
 
 Temporay directory to store cached RSS XML between instances for persistance.
 
@@ -692,9 +692,9 @@ sub tmpdir
 
 =over 4
 
-=item C<$feed-E<gt>max_headlines>
+=item B<$feed-E<gt>max_headlines>
 
-=item C<$feed-E<gt>max_headlines( $integer )>
+=item B<$feed-E<gt>max_headlines( $integer )>
 
 The maximum number of headlines you'd like to keep track of.  (0 means infinate)
 
