@@ -1,5 +1,9 @@
 Revision history for Perl module XML::RSS::Feed
 
+0.25 03/16/2004
+	- added Clone 0.13 dependency
+	- upped version to 0.25
+
 0.2 01/27/2004
 	- added new param 'tmpdir'.  The module will now attempt to load 
 	  cached XML when this param is given.  The XML is held in memory

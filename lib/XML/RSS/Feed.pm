@@ -2,7 +2,7 @@ package XML::RSS::Feed;
 use strict;
 use XML::RSS;
 use vars qw($VERSION);
-$VERSION = 0.2;
+$VERSION = 0.25;
 
 =head1 NAME
 

@@ -6,5 +6,6 @@ WriteMakefile(
     ABSTRACT     => 'Encapsulate RSS XML Sources',
     PREREQ_PM    => { 
 	'XML::RSS' => 0.97,
+	'Clone' => 0.13,
     },
 );
