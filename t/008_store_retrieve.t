@@ -68,7 +68,7 @@ SKIP: {
     skip "Could not fetch " . $feed->url . " ... timed out", 16 unless $rss_xml;
     ok($feed->parse($rss_xml), "Failed to parse XML from " . $feed->url );
     cmp_ok($feed->num_headlines, '==', 10, "Verify correct number of headlines");
-    cmp_ok($feed->late_breaking_news, '==', 0, "Verify mark_all_headlines_read");
+    cmp_ok($feed->late_breaking_news, '==', 10, "Verify mark_all_headlines_read");
 
     my @headlines_old = map { $_->headline } $feed->headlines;
     my $num_headlines = $feed->num_headlines;

@@ -4,7 +4,7 @@ use warnings;
 use base qw(XML::RSS::Headline);
 use URI::Escape qw(uri_unescape);
 
-our $VERSION = 2.04;
+our $VERSION = 2.1;
 
 =head1 NAME
 

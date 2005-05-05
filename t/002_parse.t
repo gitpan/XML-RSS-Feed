@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 12;
 
 BEGIN { use_ok('XML::RSS::Feed') }
 
@@ -11,6 +11,11 @@ my $feed = XML::RSS::Feed->new (
 );
 
 isa_ok ($feed, 'XML::RSS::Feed');
+
+$feed->parse(xml(1));
+
+cmp_ok($feed->num_headlines, '==', 10, "Verify 10 Slashdot headlines");
+cmp_ok($feed->late_breaking_news, '==', 10, "Verify 10 new headlines");
 
 $feed->parse(xml(1));
 

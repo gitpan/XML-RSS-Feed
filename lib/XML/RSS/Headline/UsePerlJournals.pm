@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use base qw(XML::RSS::Headline);
 
-our $VERSION = 2.04;
+our $VERSION = 2.1;
 
 =head1 NAME
 

@@ -34,7 +34,7 @@ for my $i (1 .. $iterations) {
 
 ok($feed->process($rss->{items},$rss->{channel}{title},$rss->{channel}{link}),"Processing");
 cmp_ok($feed->num_headlines, '==', $iterations, "Verify num_headlines $iterations");
-cmp_ok($feed->late_breaking_news, '==', 0, "Verify mark_all_headlines_read");
+cmp_ok($feed->late_breaking_news, '==', 100, "Verify 100 headlines");
 cmp_ok($feed->title, 'eq', $rss->{channel}{title}, "Verify feed title");
 cmp_ok($feed->link, 'eq', $rss->{channel}{link}, "Verify feed link");
 ok(!$feed->process(undef,$rss->{channel}{title},$rss->{channel}{link}),"Fail to process");

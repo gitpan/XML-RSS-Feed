@@ -6,7 +6,7 @@ use XML::RSS::Headline;
 use Time::HiRes;
 use Storable qw(store retrieve);
 
-our $VERSION = 2.04;
+our $VERSION = 2.1;
 
 =head1 NAME
 
@@ -95,7 +95,8 @@ The max number of headlines to keep.  (default is unlimited)
 sub new {
     my $class = shift;
 
-    my $self = bless { 
+    my $self = bless {
+	process_count    => 0,
 	rss_headlines    => [],
 	rss_headline_ids => {},
 	max_headlines    => 0,
@@ -123,6 +124,7 @@ sub _load_cached_headlines {
 	my $cached  = retrieve($filename_sto);
 	my $title = $self->title || $cached->{title} || "";
 	$self->set_last_updated($cached->{last_updated});
+	$self->{process_count}++;
 	$self->process($cached->{items},$title,$cached->{link});
 	warn "[$self->{name}] Loaded Cached RSS Storable\n" if $self->{debug};
     }
@@ -131,6 +133,7 @@ sub _load_cached_headlines {
 	my $xml = do { local $/, <$fh> };
 	close $fh;
 	warn "[$self->{name}] Loaded Cached RSS XML\n" if $self->{debug};
+	$self->{process_count}++;
 	$self->parse($xml);
     }
     else {
@@ -147,6 +150,7 @@ sub _strip_whitespace {
 
 sub _mark_all_headlines_seen {
     my ($self) = @_;
+    return unless $self->{process_count};
     $self->{rss_headline_ids}{$_->id} = 1 for $self->late_breaking_news;
 }
 
@@ -267,6 +271,7 @@ sub post_process {
 	warn "[$self->{name}] " . $self->num_headlines . " Headlines Initialized\n" 
 	    if $self->{debug};
     }
+    $self->{process_count}++;
     $self->cache;
     $self->set_last_updated;
 }

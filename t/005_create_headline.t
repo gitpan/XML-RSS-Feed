@@ -61,4 +61,4 @@ for my $i (1 .. $iterations) {
     cmp_ok($feed->late_breaking_news, '==', $i, "Verify late_breaking_news $i");
 }
 $feed->post_process();
-cmp_ok($feed->late_breaking_news, '==', 0, "Verify mark_all_headlines_read");
+cmp_ok($feed->late_breaking_news, '==', 100, "Verify mark_all_headlines_read");

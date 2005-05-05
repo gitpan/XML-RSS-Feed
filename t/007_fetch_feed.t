@@ -16,7 +16,7 @@ my $feed = XML::RSS::Feed->new (
 isa_ok ($feed, 'XML::RSS::Feed');
 ok($feed->parse(xml(1)), "Failed to parse XML from " . $feed->url );
 cmp_ok($feed->num_headlines, '==', 10, "Verify correct number of headlines");
-cmp_ok($feed->late_breaking_news, '==', 0, "Verify mark_all_headlines_read");
+cmp_ok($feed->late_breaking_news, '==', 10, "Verify mark_all_headlines_read");
 ok($feed->parse(xml(2)), "parse XML from " . $feed->url );
 cmp_ok($feed->num_headlines, '>=', 11, "Verify correct number of headlines");
 cmp_ok($feed->late_breaking_news, '>=', 1, "Verify 1 new story");

@@ -1,5 +1,14 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+2.1
+	- Added $self->{process_count} so that the first time we
+	  process a feed, we won't mark all headlines as read if
+	  this is the first time we processed the feed OR if we're 
+	  pulling up cached headlines.  (This fixes RT bug #12682)
+	  Thanks to James Armstrong for reporting it.
+	- Also updated a bunch of tests so they passed because of this
+	  bug fix.
+
 2.04
 	- Just added a use Perl; journals sub class example
 	  XML::RSS::Headline::UsePerlJournals, which

@@ -205,5 +205,6 @@ COPYRIGHT
 
 SEE ALSO
     XML::RSS::Headline, XML::RSS::Headline::PerlJobs,
-    XML::RSS::Headline::Fark, POE::Component::RSSAggregator
+    XML::RSS::Headline::Fark, XML::RSS::Headline::UsePerlJournals,
+    POE::Component::RSSAggregator
 

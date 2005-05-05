@@ -38,7 +38,7 @@ ok($feed->process_items($rss->{items}), "Process Items");
 $feed->post_process;
 
 cmp_ok($feed->num_headlines, '==', $iterations, "Verify num_headlines $iterations");
-cmp_ok($feed->late_breaking_news, '==', 0, "Verify mark_all_headlines_read");
+cmp_ok($feed->late_breaking_news, '==', $iterations, "Verify mark_all_headlines_read");
 cmp_ok($feed->title, 'eq', $rss->{channel}{title}, "Verify feed title");
 cmp_ok($feed->link, 'eq', $rss->{channel}{link}, "Verify feed link");
 ok(!$feed->process_items(), "Failed Process Items");

@@ -8,7 +8,7 @@ use Time::HiRes;
 use HTML::Entities;
 use constant DESCRIPTION_HEADLINE => 45; # length of headline when from description
 
-our $VERSION = 2.04;
+our $VERSION = 2.1;
 
 =head1 NAME
 
