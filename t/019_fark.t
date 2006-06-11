@@ -3,30 +3,33 @@ use strict;
 use warnings;
 use Test::More tests => 6;
 
-BEGIN { 
+BEGIN {
     use_ok('XML::RSS::Feed');
     use_ok('XML::RSS::Headline::Fark');
 }
 
-my $feed = XML::RSS::Feed->new (
+my $feed = XML::RSS::Feed->new(
     name  => 'fark',
     url   => "http://jobs.perl.org/rss/standard.rss",
-    hlobj => "XML::RSS::Headline::Fark");
-isa_ok($feed,"XML::RSS::Feed");
-ok($feed->parse(xml(1)),"Parse Fark XML");
-my $headline = ($feed->headlines)[0];
-is($headline->headline,
+    hlobj => "XML::RSS::Headline::Fark"
+);
+isa_ok( $feed, "XML::RSS::Feed" );
+ok( $feed->parse( xml(1) ), "Parse Fark XML" );
+my $headline = ( $feed->headlines )[0];
+is( $headline->headline,
     q|Netscape intern editing CNN names pic of GWB "a$$hole.jpg" -- unemployment ensues|,
-    "Fark headline matched");
-is($headline->url,
+    "Fark headline matched"
+);
+is( $headline->url,
     q|http://www.worldnetdaily.com/news/article.asp?ARTICLE_ID=41291|,
-    "Fark url matched");
+    "Fark url matched"
+);
 
 sub xml {
     my ($index) = @_;
     $index--;
     return (
-q|<?xml version="1.0"?>
+        q|<?xml version="1.0"?>
 <rss version="0.92">
 <channel>
 <title>Fark</title>
@@ -337,5 +340,6 @@ q|<?xml version="1.0"?>
 <link>http://go.fark.com/cgi/fark/go.pl?IDLink=1197989&amp;location=http://money.cnn.com/2004/11/02/technology/dell_de</link>
 <description>[CNN]</description>
 </item>
-</channel></rss>|)[$index]
+</channel></rss>|
+    )[$index];
 }

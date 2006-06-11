@@ -3,18 +3,18 @@ use strict;
 use warnings;
 use Test::More tests => 35;
 
-BEGIN { use_ok('XML::RSS::Feed') };
+BEGIN { use_ok('XML::RSS::Feed') }
 
 $SIG{__WARN__} = build_warn("jbisbee");
-my $feed = XML::RSS::Feed->new (
+my $feed = XML::RSS::Feed->new(
     url           => "http://www.jbisbee.com/rdf/",
     name          => 'jbisbee',
     debug         => 1,
     max_headlines => 10,
 );
-isa_ok($feed, 'XML::RSS::Feed');
-ok($feed->parse(xml(1)),"Parse XML");
-ok($feed->parse(xml(2)),"Parse XML");
+isa_ok( $feed, 'XML::RSS::Feed' );
+ok( $feed->parse( xml(1) ), "Parse XML" );
+ok( $feed->parse( xml(2) ), "Parse XML" );
 
 $SIG{__WARN__} = build_warn("test_018_debug");
 SKIP: {
@@ -27,56 +27,58 @@ SKIP: {
     print $fh $xml;
     close $fh;
 
-    my $feed_legacy_cache = XML::RSS::Feed->new (
-	name   => 'test_018_debug_legacy',
-	url    => "http://www.jbisbee.com/rsstest",
-	tmpdir => '/tmp',
-	debug  => 1,
+    my $feed_legacy_cache = XML::RSS::Feed->new(
+        name   => 'test_018_debug_legacy',
+        url    => "http://www.jbisbee.com/rsstest",
+        tmpdir => '/tmp',
+        debug  => 1,
     );
-    isa_ok($feed_legacy_cache, 'XML::RSS::Feed');
-    ok($feed_legacy_cache->num_headlines == 10, "making sure legacy caching still works");
+    isa_ok( $feed_legacy_cache, 'XML::RSS::Feed' );
+    ok( $feed_legacy_cache->num_headlines == 10,
+        "making sure legacy caching still works"
+    );
 
-    my $feed_bad_name = XML::RSS::Feed->new (
-	name   => 'test_018_debug/bad_name',
-	url    => "http://www.jbisbee.com/rsstest",
-	debug  => 1,
-	tmpdir => "/tmp",
+    my $feed_bad_name = XML::RSS::Feed->new(
+        name   => 'test_018_debug/bad_name',
+        url    => "http://www.jbisbee.com/rsstest",
+        debug  => 1,
+        tmpdir => "/tmp",
     );
-    isa_ok($feed_bad_name,"XML::RSS::Feed");
-    ok($feed_bad_name->parse(xml(1)),"Parse XML");
-    ok(!$feed_bad_name->cache,"Did Not Cache File");
+    isa_ok( $feed_bad_name, "XML::RSS::Feed" );
+    ok( $feed_bad_name->parse( xml(1) ), "Parse XML" );
+    ok( !$feed_bad_name->cache, "Did Not Cache File" );
 
     unlink "/tmp/test_018_debug.sto";
-    my $feed_title = XML::RSS::Feed->new (
-	name   => 'test_018_debug',
-	url    => "http://www.jbisbee.com/rsstest",
-	debug  => 1,
-	tmpdir => "/tmp",
+    my $feed_title = XML::RSS::Feed->new(
+        name   => 'test_018_debug',
+        url    => "http://www.jbisbee.com/rsstest",
+        debug  => 1,
+        tmpdir => "/tmp",
     );
-    isa_ok($feed_title,"XML::RSS::Feed");
-    ok($feed_title->parse(xml(1)),"Parsed XML");
-    ok($feed_title->cache,"Successfully Cached File");
+    isa_ok( $feed_title, "XML::RSS::Feed" );
+    ok( $feed_title->parse( xml(1) ), "Parsed XML" );
+    ok( $feed_title->cache, "Successfully Cached File" );
 
-    my $feed_no_title = XML::RSS::Feed->new (
-	name   => 'test_018_debug',
-	url    => "http://www.jbisbee.com/rsstest",
-	debug  => 1,
-	tmpdir => "/tmp",
+    my $feed_no_title = XML::RSS::Feed->new(
+        name   => 'test_018_debug',
+        url    => "http://www.jbisbee.com/rsstest",
+        debug  => 1,
+        tmpdir => "/tmp",
     );
-    isa_ok($feed_no_title,"XML::RSS::Feed");
+    isa_ok( $feed_no_title, "XML::RSS::Feed" );
 
 }
 
 sub build_warn {
     my @args = @_;
-    return sub { my ($warn) = @_; like($warn, qr/$_/i, $_) for @args };
+    return sub { my ($warn) = @_; like( $warn, qr/$_/i, $_ ) for @args };
 }
 
 sub xml {
     my ($index) = @_;
     $index--;
     return (
-qq|<?xml version="1.0" encoding="ISO-8859-1"?>
+        qq|<?xml version="1.0" encoding="ISO-8859-1"?>
 
 <rdf:RDF
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -152,7 +154,7 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
 
 </rdf:RDF>|,
 
-qq|<?xml version="1.0" encoding="ISO-8859-1"?>
+        qq|<?xml version="1.0" encoding="ISO-8859-1"?>
 
 <rdf:RDF
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -226,5 +228,6 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
 <link>http://slashdot.org/search.pl</link>
 </textinput>
 
-</rdf:RDF>|)[$index];
+</rdf:RDF>|
+    )[$index];
 }

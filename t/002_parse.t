@@ -5,40 +5,41 @@ use Test::More tests => 12;
 
 BEGIN { use_ok('XML::RSS::Feed') }
 
-my $feed = XML::RSS::Feed->new (
-    url   => "http://www.jbisbee.com/rdf/",
-    name  => 'jbisbee',
+my $feed = XML::RSS::Feed->new(
+    url  => "http://www.jbisbee.com/rdf/",
+    name => 'jbisbee',
 );
 
-isa_ok ($feed, 'XML::RSS::Feed');
+isa_ok( $feed, 'XML::RSS::Feed' );
 
-$feed->parse(xml(1));
+$feed->parse( xml(1) );
 
-cmp_ok($feed->num_headlines, '==', 10, "Verify 10 Slashdot headlines");
-cmp_ok($feed->late_breaking_news, '==', 10, "Verify 10 new headlines");
+cmp_ok( $feed->num_headlines,      '==', 10, "Verify 10 Slashdot headlines" );
+cmp_ok( $feed->late_breaking_news, '==', 10, "Verify 10 new headlines" );
 
-$feed->parse(xml(1));
+$feed->parse( xml(1) );
 
-cmp_ok($feed->num_headlines, '==', 10, "Verify 10 Slashdot headlines");
-cmp_ok($feed->late_breaking_news, '==', 0, "Verify 0 new headlines");
+cmp_ok( $feed->num_headlines,      '==', 10, "Verify 10 Slashdot headlines" );
+cmp_ok( $feed->late_breaking_news, '==', 0,  "Verify 0 new headlines" );
 
-$feed->parse(xml(2));
+$feed->parse( xml(2) );
 
-cmp_ok($feed->num_headlines, '==', 20, "Verify 20 Slashdot headlines");
-cmp_ok($feed->late_breaking_news, '==', 10, "Verify 10 new headlines");
-cmp_ok(ref $feed->headlines, 'eq', "ARRAY", "Test getting Headlines as an array ref");
+cmp_ok( $feed->num_headlines,      '==', 20, "Verify 20 Slashdot headlines" );
+cmp_ok( $feed->late_breaking_news, '==', 10, "Verify 10 new headlines" );
+cmp_ok( ref $feed->headlines,
+    'eq', "ARRAY", "Test getting Headlines as an array ref" );
 
 $feed->hlobj("URI");
 $feed->hlobj(undef);
-cmp_ok($feed->hlobj, 'eq', 'URI', "attempt to set hlobj to undef");
-ok(!$feed->headline_as_id,"headline_as_id defaults to undef");
-ok(!$feed->debug,"debug defaults to undef");
+cmp_ok( $feed->hlobj, 'eq', 'URI', "attempt to set hlobj to undef" );
+ok( !$feed->headline_as_id, "headline_as_id defaults to undef" );
+ok( !$feed->debug,          "debug defaults to undef" );
 
 sub xml {
     my $index = shift;
     $index--;
-    return(
-qq|<?xml version="1.0" encoding="ISO-8859-1"?>
+    return (
+        qq|<?xml version="1.0" encoding="ISO-8859-1"?>
 
 <rdf:RDF
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -114,7 +115,7 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
 </textinput>
 
 </rdf:RDF>|,
-qq|<?xml version="1.0" encoding="ISO-8859-1"?>
+        qq|<?xml version="1.0" encoding="ISO-8859-1"?>
 
 <rdf:RDF
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -189,7 +190,8 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
 <link>http://slashdot.org/search.pl</link>
 </textinput>
 
-</rdf:RDF>|)[$index];
+</rdf:RDF>|
+    )[$index];
 }
 
 1;

@@ -6,21 +6,21 @@ use Test::More tests => 3;
 
 use_ok("XML::RSS::Feed");
 
-my $dir = tempdir( CLEANUP => 1 );
+my $dir  = tempdir( CLEANUP => 1 );
 my $name = 'jbisbee_test';
-my $rss = do { local $/, <DATA> };
+my $rss  = do { local $/, <DATA> };
 
 open my $fh, ">" . $dir . '/' . $name;
 print $fh $rss;
 close $fh;
 
-my $feed = XML::RSS::Feed->new (
+my $feed = XML::RSS::Feed->new(
     name   => 'jbisbee_test',
     url    => "http://www.jbisbee.com/rsstest",
     tmpdir => $dir,
 );
-isa_ok($feed, 'XML::RSS::Feed');
-ok($feed->num_headlines == 10, "making sure legacy caching still works");
+isa_ok( $feed, 'XML::RSS::Feed' );
+ok( $feed->num_headlines == 10, "making sure legacy caching still works" );
 
 __DATA__
 <?xml version="1.0"?>

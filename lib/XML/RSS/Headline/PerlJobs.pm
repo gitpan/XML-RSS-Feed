@@ -3,11 +3,17 @@ use strict;
 use warnings;
 use base qw(XML::RSS::Headline);
 
-our $VERSION = 2.1;
-
 =head1 NAME
 
 XML::RSS::Headline::PerlJobs - XML::RSS::Headline Example Subclass
+
+=head1 VERSION
+
+2.2
+
+=cut
+
+our $VERSION = 2.2;
 
 =head1 SYNOPSIS
 
@@ -42,13 +48,9 @@ these modules)
 
 =head1 MUTAITED METHOD
 
-=over 4
-
-=item B<< $headline->item( $item ) >>
+=head2 $headline->item( $item )
 
 Init the object for a parsed RSS item returned by L<XML::RSS>.
-
-=back
 
 =cut 
 
@@ -68,17 +70,56 @@ sub item {
 
 =head1 AUTHOR
 
-Copyright 2004 Jeff Bisbee <jbisbee@cpan.org>
+Jeff Bisbee, C<< <jbisbee at cpan.org> >>
 
-http://search.cpan.org/~jbisbee/
+=head1 BUGS
 
-=head1 COPYRIGHT
+Please report any bugs or feature requests to
+C<bug-xml-rss-feed at rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=XML-RSS-Feed>.
+I will be notified, and then you'll automatically be notified of progress on
+your bug as I make changes.
 
-This program is free software; you can redistribute it and/or modify it under 
-the same terms as Perl itself.
+=head1 SUPPORT
 
-The full text of the license can be found in the LICENSE file included with 
-this module.
+You can find documentation for this module with the perldoc command.
+
+    perldoc XML::RSS::Headline::PerlJobs
+
+You can also look for information at:
+
+=over 4
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/XML-RSS-Feed>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/XML-RSS-Feed>
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=XML-RSS-Feed>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/XML-RSS-Feed>
+
+=back
+
+=head1 ACKNOWLEDGEMENTS
+
+Special thanks to Rocco Caputo, Martijn van Beers, Sean Burke, Prakash Kailasa
+and Randal Schwartz for their help, guidance, patience, and bug reports. Guys 
+thanks for actually taking time to use the code and give good, honest feedback.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2006 Jeff Bisbee, all rights reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
 =head1 SEE ALSO
 

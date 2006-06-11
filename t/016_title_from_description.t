@@ -5,37 +5,37 @@ use Test::More tests => 53;
 
 BEGIN { use_ok('XML::RSS::Feed') }
 
-my $feed = XML::RSS::Feed->new (
-    url       => "http://www.jbisbee.com/rdf/",
-    name      => 'jbisbee',
+my $feed = XML::RSS::Feed->new(
+    url  => "http://www.jbisbee.com/rdf/",
+    name => 'jbisbee',
 );
-isa_ok ($feed, 'XML::RSS::Feed');
+isa_ok( $feed, 'XML::RSS::Feed' );
 
 $SIG{__WARN__} = build_warn("Wide character in print");
 my $xml = do { local $/; <DATA> };
 $feed->parse($xml);
-my $count = 0;;
-for my $headline ($feed->headlines) {
+my $count = 0;
+for my $headline ( $feed->headlines ) {
     $count++;
-    ok($headline->headline, "Headline: $count");
+    ok( $headline->headline, "Headline: $count" );
 }
 
-my $feed2 = XML::RSS::Feed->new (
+my $feed2 = XML::RSS::Feed->new(
     url            => "http://www.jbisbee.com/rdf/",
     name           => 'jbisbee',
     headline_as_id => 1,
 );
-isa_ok ($feed, 'XML::RSS::Feed');
+isa_ok( $feed, 'XML::RSS::Feed' );
 $feed2->parse($xml);
-$count = 0;;
-for my $headline ($feed2->headlines) {
+$count = 0;
+for my $headline ( $feed2->headlines ) {
     $count++;
-    ok($headline->headline, "Headline: $count");
+    ok( $headline->headline, "Headline: $count" );
 }
 
 sub build_warn {
     my @args = @_;
-    return sub { my ($warn) = @_; like($warn, qr/$_/i, $_) for @args };
+    return sub { my ($warn) = @_; like( $warn, qr/$_/i, $_ ) for @args };
 }
 
 __DATA__

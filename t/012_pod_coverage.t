@@ -6,7 +6,7 @@ use Test::More;
 BEGIN {
     eval { require Test::Pod::Coverage; };
     my $test_pod_coverage = $@ ? 0 : 1;
-    sub TEST_POD_COVERAGE { $test_pod_coverage }
+    sub TEST_POD_COVERAGE {$test_pod_coverage}
 }
 
 if (TEST_POD_COVERAGE) {

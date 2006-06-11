@@ -8,98 +8,106 @@ BEGIN { use_ok('XML::RSS::Feed') }
 SKIP: {
     skip "/tmp directory doesn't exist", 32 unless -d "/tmp";
     $SIG{__WARN__} = build_warn("could not cache");
-    my $feed_bad_name = XML::RSS::Feed->new (
-	name   => 'test_008/_title',
-	url    => "http://www.jbisbee.com/rsstest",
-	tmpdir => "/tmp",
+    my $feed_bad_name = XML::RSS::Feed->new(
+        name   => 'test_008/_title',
+        url    => "http://www.jbisbee.com/rsstest",
+        tmpdir => "/tmp",
     );
-    isa_ok($feed_bad_name,"XML::RSS::Feed");
-    ok($feed_bad_name->parse(xml(1)),"Parsed XML");
-    ok(!$feed_bad_name->cache,"Did Not Cache File");
+    isa_ok( $feed_bad_name, "XML::RSS::Feed" );
+    ok( $feed_bad_name->parse( xml(1) ), "Parsed XML" );
+    ok( !$feed_bad_name->cache, "Did Not Cache File" );
 
-    my $feed_bad_tmpdir = XML::RSS::Feed->new (
-	name   => 'test_008_title',
-	url    => "http://www.jbisbee.com/rsstest",
-	tmpdir => "/fake/directory/that/no/one/will/actually/have",
+    my $feed_bad_tmpdir = XML::RSS::Feed->new(
+        name   => 'test_008_title',
+        url    => "http://www.jbisbee.com/rsstest",
+        tmpdir => "/fake/directory/that/no/one/will/actually/have",
     );
-    isa_ok($feed_bad_tmpdir,"XML::RSS::Feed");
-    ok(!$feed_bad_tmpdir->cache,"Did Not Cache File");
+    isa_ok( $feed_bad_tmpdir, "XML::RSS::Feed" );
+    ok( !$feed_bad_tmpdir->cache, "Did Not Cache File" );
 
     unlink "/tmp/test_008_title.sto";
-    my $feed_title = XML::RSS::Feed->new (
-	name   => 'test_008_title',
-	url    => "http://www.jbisbee.com/rsstest",
-	tmpdir => "/tmp",
+    my $feed_title = XML::RSS::Feed->new(
+        name   => 'test_008_title',
+        url    => "http://www.jbisbee.com/rsstest",
+        tmpdir => "/tmp",
     );
-    isa_ok($feed_title,"XML::RSS::Feed");
-    ok(!$feed_title->cache,"Did Not Cache File");
-    ok($feed_title->parse(xml(1)),"Parsed XML");
-    ok($feed_title->cache,"Successfully Cached File");
+    isa_ok( $feed_title, "XML::RSS::Feed" );
+    ok( !$feed_title->cache,          "Did Not Cache File" );
+    ok( $feed_title->parse( xml(1) ), "Parsed XML" );
+    ok( $feed_title->cache,           "Successfully Cached File" );
 
-    my $feed_no_title = XML::RSS::Feed->new (
-	name   => 'test_008_title',
-	url    => "http://www.jbisbee.com/rsstest",
-	tmpdir => "/tmp",
+    my $feed_no_title = XML::RSS::Feed->new(
+        name   => 'test_008_title',
+        url    => "http://www.jbisbee.com/rsstest",
+        tmpdir => "/tmp",
     );
-    isa_ok($feed_no_title,"XML::RSS::Feed");
+    isa_ok( $feed_no_title, "XML::RSS::Feed" );
 
-    my $feed_title_cache = XML::RSS::Feed->new (
-	title  => 'Some Stupid Title',
-	name   => 'test_008_title',
-	url    => "http://www.jbisbee.com/rsstest",
-	tmpdir => "/tmp",
+    my $feed_title_cache = XML::RSS::Feed->new(
+        title  => 'Some Stupid Title',
+        name   => 'test_008_title',
+        url    => "http://www.jbisbee.com/rsstest",
+        tmpdir => "/tmp",
     );
-    isa_ok($feed_title_cache,"XML::RSS::Feed");
+    isa_ok( $feed_title_cache, "XML::RSS::Feed" );
 
     eval { require LWP::Simple };
     skip "LWP::Simple not installed", 17 if $@;
 
     unlink "/tmp/test_008.sto";
-    my $feed = XML::RSS::Feed->new (
-	name   => 'test_008',
-	url    => "http://www.jbisbee.com/rsstest",
-	tmpdir => "/tmp",
+    my $feed = XML::RSS::Feed->new(
+        name   => 'test_008',
+        url    => "http://www.jbisbee.com/rsstest",
+        tmpdir => "/tmp",
     );
 
-    isa_ok ($feed, 'XML::RSS::Feed');
+    isa_ok( $feed, 'XML::RSS::Feed' );
 
-    my $rss_xml = LWP::Simple::get($feed->url) || undef;
+    my $rss_xml = LWP::Simple::get( $feed->url ) || undef;
 
-    skip "Could not fetch " . $feed->url . " ... timed out", 16 unless $rss_xml;
-    ok($feed->parse($rss_xml), "Failed to parse XML from " . $feed->url );
-    cmp_ok($feed->num_headlines, '==', 10, "Verify correct number of headlines");
-    cmp_ok($feed->late_breaking_news, '==', 10, "Verify mark_all_headlines_read");
+    skip "Could not fetch " . $feed->url . " ... timed out", 16
+        unless $rss_xml;
+    ok( $feed->parse($rss_xml), "Failed to parse XML from " . $feed->url );
+    cmp_ok( $feed->num_headlines, '==', 10,
+        "Verify correct number of headlines" );
+    cmp_ok( $feed->late_breaking_news, '==', 10,
+        "Verify mark_all_headlines_read" );
 
     my @headlines_old = map { $_->headline } $feed->headlines;
     my $num_headlines = $feed->num_headlines;
-    my @seen_old = map { $_->first_seen_hires } $feed->headlines;
+    my @seen_old      = map { $_->first_seen_hires } $feed->headlines;
     $feed->cache;
 
-    my $feed2 = XML::RSS::Feed->new (
-	name   => 'test_008',
-	url    => "http://www.jbisbee.com/rsstest",
-	tmpdir => "/tmp",
+    my $feed2 = XML::RSS::Feed->new(
+        name   => 'test_008',
+        url    => "http://www.jbisbee.com/rsstest",
+        tmpdir => "/tmp",
     );
-    isa_ok ($feed2, 'XML::RSS::Feed');
-    cmp_ok($num_headlines, '==', $feed2->num_headlines, "Compare after restoring cache");
+    isa_ok( $feed2, 'XML::RSS::Feed' );
+    cmp_ok( $num_headlines, '==', $feed2->num_headlines,
+        "Compare after restoring cache" );
 
-    my $feed3 = XML::RSS::Feed->new (
-	name   => 'test_008',
-	url    => "http://www.jbisbee.com/rsstest",
-	tmpdir => "/tmp",
+    my $feed3 = XML::RSS::Feed->new(
+        name   => 'test_008',
+        url    => "http://www.jbisbee.com/rsstest",
+        tmpdir => "/tmp",
     );
-    isa_ok ($feed3, 'XML::RSS::Feed');
-    cmp_ok($num_headlines, '==', $feed3->num_headlines, "Compare after restoring cache");
+    isa_ok( $feed3, 'XML::RSS::Feed' );
+    cmp_ok( $num_headlines, '==', $feed3->num_headlines,
+        "Compare after restoring cache" );
 
     unlink "/tmp/test_008.sto";
     my @headlines_new = map { $_->headline } $feed2->headlines;
-    my @seen_new = map { $_->first_seen_hires } $feed2->headlines;
+    my @seen_new      = map { $_->first_seen_hires } $feed2->headlines;
 
-    ok(eq_array(\@headlines_old,\@headlines_new), "Comparing headlines before and after");
+    ok( eq_array( \@headlines_old, \@headlines_new ),
+        "Comparing headlines before and after"
+    );
 
-    for my $i (0..$#seen_old) {
-	my $num = $i + 1;
-	cmp_ok($seen_old[$i], '==', $seen_new[$i], "Compare headline $num timestamp_hires");
+    for my $i ( 0 .. $#seen_old ) {
+        my $num = $i + 1;
+        cmp_ok( $seen_old[$i], '==', $seen_new[$i],
+            "Compare headline $num timestamp_hires" );
     }
 }
 
@@ -107,7 +115,7 @@ sub xml {
     my ($index) = @_;
     $index--;
     return (
-qq|<?xml version="1.0" encoding="ISO-8859-1"?>
+        qq|<?xml version="1.0" encoding="ISO-8859-1"?>
 
 <rdf:RDF
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -181,10 +189,11 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
 <link>http://slashdot.org/search.pl</link>
 </textinput>
 
-</rdf:RDF>|)[$index];
+</rdf:RDF>|
+    )[$index];
 }
 
 sub build_warn {
     my @args = @_;
-    return sub { my ($warn) = @_; like($warn, qr/$_/i, $_) for @args };
+    return sub { my ($warn) = @_; like( $warn, qr/$_/i, $_ ) for @args };
 }

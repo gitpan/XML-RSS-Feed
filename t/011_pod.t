@@ -6,7 +6,7 @@ use Test::More;
 BEGIN {
     eval { require Test::Pod; };
     my $test_pod = $@ ? 0 : 1;
-    sub TEST_POD { $test_pod }
+    sub TEST_POD {$test_pod}
 }
 
 if (TEST_POD) {

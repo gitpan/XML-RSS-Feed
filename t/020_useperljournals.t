@@ -3,30 +3,34 @@ use strict;
 use warnings;
 use Test::More tests => 6;
 
-BEGIN { 
+BEGIN {
     use_ok('XML::RSS::Feed');
     use_ok('XML::RSS::Headline::UsePerlJournals');
 }
 
-my $feed = XML::RSS::Feed->new (
+my $feed = XML::RSS::Feed->new(
     name  => 'useperljournals',
-    url   => "http://use.perl.org/search.pl?tid=&query=&author=&op=journals&content_type=rss",
     hlobj => "XML::RSS::Headline::UsePerlJournals",
+    url   => "http://use.perl.org/search.pl?tid=&query=&author=&"
+        . "op=journals&content_type=rss",
 );
-isa_ok($feed,"XML::RSS::Feed");
-ok($feed->parse(xml(1)),"Parse Fark XML");
-my $headline = ($feed->headlines)[0];
-is($headline->headline,
+isa_ok( $feed, "XML::RSS::Feed" );
+ok( $feed->parse( xml(1) ), "Parse Fark XML" );
+my $headline = ( $feed->headlines )[0];
+is( $headline->headline,
     q|[Ovid] The Real CPAN Limitation|,
-    "use Perl; Journal headline matched");
-is($headline->url,
+    "use Perl; Journal headline matched"
+);
+is( $headline->url,
     q|http://use.perl.org/~Ovid/journal/21897?from=rss|,
-    "use Perl; Journal url matched");
+    "use Perl; Journal url matched"
+);
 
 sub xml {
     my ($index) = @_;
     $index--;
-    return (q|<?xml version="1.0" encoding="ISO-8859-1"?>
+    return (
+        q|<?xml version="1.0" encoding="ISO-8859-1"?>
 
 <rdf:RDF
  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -154,5 +158,6 @@ sub xml {
 <link>http://use.perl.org/~chaoticset/journal/21883?from=rss</link>
 </item>
 
-</rdf:RDF>|)[$index]
+</rdf:RDF>|
+    )[$index];
 }

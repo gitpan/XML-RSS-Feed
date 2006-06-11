@@ -1,7 +1,5 @@
 MANIFEST
-LICENSE
 README
-Todo
 Changes
 lib/XML/RSS/Feed.pm
 lib/XML/RSS/Headline.pm

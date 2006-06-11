@@ -3,37 +3,40 @@ use strict;
 use warnings;
 use Test::More tests => 11;
 
-BEGIN { 
+BEGIN {
     use_ok('XML::RSS::Feed');
     use_ok('XML::RSS::Headline::PerlJobs');
 }
 
-my $feed = XML::RSS::Feed->new (
-    name  => 'jbisbee_test',
-    url   => "http://www.jbisbee.com/rsstest",
+my $feed = XML::RSS::Feed->new(
+    name => 'jbisbee_test',
+    url  => "http://www.jbisbee.com/rsstest",
 );
 
-isa_ok ($feed, 'XML::RSS::Feed');
-ok($feed->parse(xml(1)), "Failed to parse XML from " . $feed->url );
-cmp_ok($feed->num_headlines, '==', 10, "Verify correct number of headlines");
-cmp_ok($feed->late_breaking_news, '==', 10, "Verify mark_all_headlines_read");
-ok($feed->parse(xml(2)), "parse XML from " . $feed->url );
-cmp_ok($feed->num_headlines, '>=', 11, "Verify correct number of headlines");
-cmp_ok($feed->late_breaking_news, '>=', 1, "Verify 1 new story");
+isa_ok( $feed, 'XML::RSS::Feed' );
+ok( $feed->parse( xml(1) ), "Failed to parse XML from " . $feed->url );
+cmp_ok( $feed->num_headlines, '==', 10,
+    "Verify correct number of headlines" );
+cmp_ok( $feed->late_breaking_news, '==', 10,
+    "Verify mark_all_headlines_read" );
+ok( $feed->parse( xml(2) ), "parse XML from " . $feed->url );
+cmp_ok( $feed->num_headlines, '>=', 11,
+    "Verify correct number of headlines" );
+cmp_ok( $feed->late_breaking_news, '>=', 1, "Verify 1 new story" );
 
-my $pj_feed = XML::RSS::Feed->new (
+my $pj_feed = XML::RSS::Feed->new(
     name  => 'perljobs',
     url   => "http://jobs.perl.org/rss/standard.rss",
     hlobj => "XML::RSS::Headline::PerlJobs",
 );
-isa_ok ($pj_feed, 'XML::RSS::Feed');
-ok($pj_feed->parse(xml(3)), "parse XML from " . $pj_feed->url );
+isa_ok( $pj_feed, 'XML::RSS::Feed' );
+ok( $pj_feed->parse( xml(3) ), "parse XML from " . $pj_feed->url );
 
 sub xml {
     my ($index) = @_;
     $index--;
     return (
-q|<?xml version="1.0"?>
+        q|<?xml version="1.0"?>
 <rdf:RDF
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 xmlns="http://my.netscape.com/rdf/simple/0.9/">
@@ -87,7 +90,7 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
  
 
 </rdf:RDF>|,
-q|<?xml version="1.0"?>
+        q|<?xml version="1.0"?>
 <rdf:RDF
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 xmlns="http://my.netscape.com/rdf/simple/0.9/">
@@ -139,7 +142,7 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
 <link>http://www.jbisbee.com/xml-rss-feed/test/1099539840</link>
 </item>
 </rdf:RDF>|,
-q|<?xml version="1.0" encoding="UTF-8"?>
+        q|<?xml version="1.0" encoding="UTF-8"?>
 
 <rdf:RDF
  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -316,5 +319,5 @@ q|<?xml version="1.0" encoding="UTF-8"?>
 
 </rdf:RDF>|
 
-)[$index];
+    )[$index];
 }
