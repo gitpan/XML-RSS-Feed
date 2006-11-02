@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 33;
+use Test::More tests => 31;
 
 BEGIN { use_ok('XML::RSS::Feed') }
 

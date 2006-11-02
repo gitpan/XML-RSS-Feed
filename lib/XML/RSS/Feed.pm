@@ -14,11 +14,11 @@ XML::RSS::Feed - Persistant XML RSS Encapsulation
 
 =head1 VERSION
 
-2.2
+2.21
 
 =cut
 
-our $VERSION = 2.2;
+our $VERSION = 2.21;
 
 =head1 SYNOPSIS
 
