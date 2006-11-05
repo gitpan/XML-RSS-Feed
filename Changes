@@ -1,5 +1,9 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+2.211    11/05/2006
+	- fix META.yml generation by upgrading to ExtUtils::MakeMaker 6.31
+        - add examples directory with an example
+
 2.21    11/01/2006
 	- make cpants compatible with updated META.yml
         - fix broken tests pointing to old jbisbee.com/rsstest

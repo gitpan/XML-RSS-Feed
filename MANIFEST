@@ -1,6 +1,7 @@
 MANIFEST
 README
 Changes
+examples/example-1.pl
 lib/XML/RSS/Feed.pm
 lib/XML/RSS/Headline.pm
 lib/XML/RSS/Headline/PerlJobs.pm
