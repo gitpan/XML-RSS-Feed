@@ -1,10 +1,11 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         XML-RSS-Feed
-version:      2.211
-version_from: lib/XML/RSS/Feed.pm
-installdirs:  site
-requires:
+--- #YAML:1.0
+name:                XML-RSS-Feed
+version:             2.212
+abstract:            Persistant XML RSS Encapsulation
+license:             perl
+generated_by:        ExtUtils::MakeMaker version 6.31
+distribution_type:   module
+requires:     
     Clone:                         0
     Digest::MD5:                   0
     Encode:                        0
@@ -14,6 +15,8 @@ requires:
     Time::HiRes:                   0
     URI:                           0
     XML::RSS:                      0
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.30_01
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
+    version: 1.2
+author:
+    - Jeff Bisbee <jbisbee@cpan.org>

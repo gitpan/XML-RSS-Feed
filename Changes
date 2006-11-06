@@ -1,5 +1,9 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+2.212    11/06/2006
+	- fix META.yml generation by upgrading to ExtUtils::MakeMaker 6.31
+        - add examples directory with an example (part deux)
+
 2.211    11/05/2006
 	- fix META.yml generation by upgrading to ExtUtils::MakeMaker 6.31
         - add examples directory with an example
