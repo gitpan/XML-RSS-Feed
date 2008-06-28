@@ -4,17 +4,42 @@ use warnings;
 use base qw(XML::RSS::Headline);
 use URI::Escape qw(uri_unescape);
 
+our $VERSION = 2.3;
+
+sub item {
+    my ( $self, $item ) = @_;
+    $self->SUPER::item($item);    # set url and description
+
+    my $headline = $self->headline;
+    $headline =~ s/\[.+?\]\s+//;
+    $self->headline($headline);
+
+    my $url     = $self->url;
+    my $stripit = qr/
+        http\:\/\/
+        go\.fark\.com\/
+        cgi\/fark\/go\.pl\?
+        IDLink\=\d+\&
+        location\=
+    /x;
+
+    $url =~ s/$stripit//;
+    $self->url( uri_unescape($url) );
+
+    return;
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 XML::RSS::Headline::Fark - XML::RSS::Headline Example Subclass
 
 =head1 VERSION
 
-2.2
-
-=cut
-
-our $VERSION = 2.2;
+2.3
 
 =head1 SYNOPSIS
 
@@ -56,29 +81,6 @@ and here is the updated output
 Init the object for a parsed RSS item returned by L<XML::RSS>.
 
 =back
-
-=cut 
-
-sub item {
-    my ( $self, $item ) = @_;
-    $self->SUPER::item($item);    # set url and description
-
-    my $headline = $self->headline;
-    $headline =~ s/\[.+?\]\s+//;
-    $self->headline($headline);
-
-    my $url     = $self->url;
-    my $stripit = qr/
-        http\:\/\/
-        go\.fark\.com\/
-        cgi\/fark\/go\.pl\?
-        IDLink\=\d+\&
-        location\=
-    /x;
-
-    $url =~ s/$stripit//;
-    $self->url( uri_unescape($url) );
-}
 
 =head1 AUTHOR
 
@@ -137,6 +139,3 @@ under the same terms as Perl itself.
 
 L<XML::RSS::Feed>, L<XML::RSS::Headline>, L<XML::RSS::Headline::PerlJobs>, L<XML::RSS::Headline::UsePerlJournals>, L<POE::Component::RSSAggregator>
 
-=cut
-
-1;

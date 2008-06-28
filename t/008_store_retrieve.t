@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 31;
+use Test::More tests => 33;
 
 BEGIN { use_ok('XML::RSS::Feed') }
 
 SKIP: {
-    skip "/tmp directory doesn't exist", 32 unless -d "/tmp";
+    skip "/tmp directory not writeable", 32 unless -d "/tmp" && -w "/tmp";
     $SIG{__WARN__} = build_warn("could not cache");
     my $feed_bad_name = XML::RSS::Feed->new(
         name   => 'test_008/_title',
@@ -51,9 +51,6 @@ SKIP: {
     );
     isa_ok( $feed_title_cache, "XML::RSS::Feed" );
 
-    eval { require LWP::Simple };
-    skip "LWP::Simple not installed", 17 if $@;
-
     unlink "/tmp/test_008.sto";
     my $feed = XML::RSS::Feed->new(
         name   => 'test_008',
@@ -63,10 +60,8 @@ SKIP: {
 
     isa_ok( $feed, 'XML::RSS::Feed' );
 
-    my $rss_xml = LWP::Simple::get( $feed->url ) || undef;
+    my $rss_xml = xml(2);
 
-    skip "Could not fetch " . $feed->url . " ... timed out", 16
-        unless $rss_xml;
     ok( $feed->parse($rss_xml), "Failed to parse XML from " . $feed->url );
     cmp_ok( $feed->num_headlines, '==', 10,
         "Verify correct number of headlines" );
@@ -189,7 +184,113 @@ xmlns="http://my.netscape.com/rdf/simple/0.9/">
 <link>http://slashdot.org/search.pl</link>
 </textinput>
 
-</rdf:RDF>|
+</rdf:RDF>|,
+        q|<?xml version="1.0"?>
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns="http://my.netscape.com/rdf/simple/0.9/">
+
+<channel>
+<title>jbisbee.com</title>
+<link>http://www.jbisbee.com/</link>
+<description>Testing XML::RSS::Feed</description>
+</channel>
+
+<item>
+<title>Wednesday 03rd of November 2004 08:48:00 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099540080</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:47:30 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099540050</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:47:00 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099540020</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:46:30 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539990</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:46:00 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539960</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:45:30 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539930</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:45:00 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539900</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:44:30 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539870</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:44:00 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539840</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:43:30 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539810</link>
+</item>
+ 
+
+</rdf:RDF>|,
+        q|<?xml version="1.0"?>
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns="http://my.netscape.com/rdf/simple/0.9/">
+
+<channel>
+<title>jbisbee.com</title>
+<link>http://www.jbisbee.com/</link>
+<description>Testing XML::RSS::Feed</description>
+</channel>
+
+<item>
+<title>Wednesday 03rd of November 2004 08:48:30 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099540110</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:48:00 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099540080</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:47:30 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099540050</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:47:00 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099540020</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:46:30 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539990</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:46:00 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539960</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:45:30 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539930</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:45:00 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539900</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:44:30 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539870</link>
+</item>
+<item>
+<title>Wednesday 03rd of November 2004 08:44:00 PM</title>
+<link>http://www.jbisbee.com/xml-rss-feed/test/1099539840</link>
+</item>
+</rdf:RDF>|,
     )[$index];
 }
 

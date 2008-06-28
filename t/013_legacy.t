@@ -1,26 +1,37 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use File::Temp qw(tempfile tempdir);
-use Test::More tests => 3;
+use Test::More;
 
-use_ok("XML::RSS::Feed");
+BEGIN {
+    eval { require File::Temp; };
+    my $file_temp = $@ ? 0 : 1;
+    sub TEST_LEGACY {$file_temp}
+}
 
-my $dir  = tempdir( CLEANUP => 1 );
-my $name = 'jbisbee_test';
-my $rss  = do { local $/, <DATA> };
+if (TEST_LEGACY) {
+    plan tests => 3;
+    use_ok("XML::RSS::Feed");
 
-open my $fh, ">" . $dir . '/' . $name;
-print $fh $rss;
-close $fh;
+    my $dir  = File::Temp::tempdir( CLEANUP => 1 );
+    my $name = 'jbisbee_test';
+    my $rss  = do { local $/, <DATA> };
 
-my $feed = XML::RSS::Feed->new(
-    name   => 'jbisbee_test',
-    url    => "http://www.jbisbee.com/rsstest",
-    tmpdir => $dir,
-);
-isa_ok( $feed, 'XML::RSS::Feed' );
-ok( $feed->num_headlines == 10, "making sure legacy caching still works" );
+    open my $fh, ">", $dir . '/' . $name;
+    print $fh $rss;
+    close $fh;
+
+    my $feed = XML::RSS::Feed->new(
+        name   => 'jbisbee_test',
+        url    => "http://www.jbisbee.com/rsstest",
+        tmpdir => $dir,
+    );
+    isa_ok( $feed, 'XML::RSS::Feed' );
+    ok( $feed->num_headlines == 10, "making sure legacy caching still works" );
+}
+else {
+    plan skip_all => "File::Temp required";
+}
 
 __DATA__
 <?xml version="1.0"?>

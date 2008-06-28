@@ -3,17 +3,33 @@ use strict;
 use warnings;
 use base qw(XML::RSS::Headline);
 
+our $VERSION = 2.3;
+
+sub item {
+    my ( $self, $item ) = @_;
+    $self->SUPER::item($item);    # set url and description
+
+    my $headline = $self->headline;
+    my $url      = $self->url;
+    my ($id) = $url =~ /\/\~(.+?)\//;
+    $headline =~ s/\s+\(.+\)\s*$//;
+
+    $self->headline("[$id] $headline");
+
+    return;
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 XML::RSS::Headline::UsePerlJournals - XML::RSS::Headline Example Subclass
 
 =head1 VERSION
 
-2.2
-
-=cut
-
-our $VERSION = 2.2;
+2.3
 
 =head1 SYNOPSIS
 
@@ -53,20 +69,6 @@ these modules)
 =head2 $headline->item( $item )
 
 Init the object for a parsed RSS item returned by L<XML::RSS>.
-
-=cut 
-
-sub item {
-    my ( $self, $item ) = @_;
-    $self->SUPER::item($item);    # set url and description
-
-    my $headline = $self->headline;
-    my $url      = $self->url;
-    my ($id) = $url =~ /\/\~(.+?)\//;
-    $headline =~ s/\s+\(.+\)\s*$//;
-
-    $self->headline("[$id] $headline");
-}
 
 =head1 AUTHOR
 
@@ -125,6 +127,3 @@ under the same terms as Perl itself.
 
 L<XML::RSS::Feed>, L<XML::RSS::Headline>, L<XML::RSS::Headline::PerlJobs>, L<XML::RSS::Headline::Fark>, L<POE::Component::RSSAggregator>
 
-=cut
-
-1;

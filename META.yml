@@ -1,11 +1,14 @@
 --- #YAML:1.0
 name:                XML-RSS-Feed
-version:             2.212
+version:             2.3
 abstract:            Persistant XML RSS Encapsulation
 license:             perl
-generated_by:        ExtUtils::MakeMaker version 6.31
+author:              
+    - Jeff Bisbee <jbisbee@cpan.org>
+generated_by:        ExtUtils::MakeMaker version 6.44
 distribution_type:   module
 requires:     
+    Carp:                          0
     Clone:                         0
     Digest::MD5:                   0
     Encode:                        0
@@ -16,7 +19,5 @@ requires:
     URI:                           0
     XML::RSS:                      0
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
-    version: 1.2
-author:
-    - Jeff Bisbee <jbisbee@cpan.org>
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

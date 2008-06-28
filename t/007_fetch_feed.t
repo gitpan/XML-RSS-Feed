@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More tests => 15;
 
 BEGIN {
     use_ok('XML::RSS::Feed');
@@ -15,14 +15,22 @@ my $feed = XML::RSS::Feed->new(
 
 isa_ok( $feed, 'XML::RSS::Feed' );
 ok( $feed->parse( xml(1) ), "Failed to parse XML from " . $feed->url );
-cmp_ok( $feed->num_headlines, '==', 10,
-    "Verify correct number of headlines" );
-cmp_ok( $feed->late_breaking_news, '==', 10,
-    "Verify mark_all_headlines_read" );
+cmp_ok( $feed->num_headlines, '==', 10, "Verify correct number of headlines" );
+cmp_ok( $feed->late_breaking_news, '==', 10, "Verify mark_all_headlines_read" );
 ok( $feed->parse( xml(2) ), "parse XML from " . $feed->url );
-cmp_ok( $feed->num_headlines, '>=', 11,
-    "Verify correct number of headlines" );
+cmp_ok( $feed->num_headlines, '>=', 11, "Verify correct number of headlines" );
 cmp_ok( $feed->late_breaking_news, '>=', 1, "Verify 1 new story" );
+
+my $seen_feed = XML::RSS::Feed->new(
+    name                => 'jbisbee_test',
+    url                 => "http://www.jbisbee.com/rsstest",
+    init_headlines_seen => 1,
+);
+
+isa_ok( $seen_feed, 'XML::RSS::Feed' );
+ok( $seen_feed->parse( xml(1) ), "Failed to parse XML from " . $seen_feed->url );
+cmp_ok( $seen_feed->num_headlines, '==', 10, "Verify correct number of headlines" );
+cmp_ok( $seen_feed->late_breaking_news, '==', 0, "Verify mark_all_headlines_read" );
 
 my $pj_feed = XML::RSS::Feed->new(
     name  => 'perljobs',

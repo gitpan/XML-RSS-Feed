@@ -8,7 +8,7 @@ WriteMakefile(
     VERSION_FROM  => 'lib/XML/RSS/Feed.pm',
     ABSTRACT_FROM => 'lib/XML/RSS/Feed.pm',
     PL_FILES      => {},
-    PREREQ_PM     => {
+    PREREQ_PM => {
         'Test::More'     => 0,
         'XML::RSS'       => 0,
         'Clone'          => 0,
@@ -18,6 +18,7 @@ WriteMakefile(
         'Digest::MD5'    => 0,
         'Encode'         => 0,
         'HTML::Entities' => 0,
+        'Carp'           => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'XML-RSS-Feed-*' },

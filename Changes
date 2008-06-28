@@ -1,5 +1,31 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+2.3      06/26/208
+        - new constructor param "init_headlines_seen" so you can fetch a feed,
+          mark everything as seen, then only get updates after the fact.
+          Thanks to Carl Fürstenberg for suggesting.
+        - Applied Aaron Krowne's patch for XML::RSS::Headline to use guid instead
+          of the url if available.  Thanks Aaron!
+            - wrote t/021_headline_guid.t for XML::RSS::Headline->guid
+        - fix t/008_store_retrieve.t to check if not only is /tmp a dir but also if
+          its writeable.  This fixes testing errors reported by Slaven Rezić.
+        - Also no longer use LWP::Simple to try to call jbisbee.com/rsstest, just
+          hard code the XML in the test because jbisbee.com no longer exists.
+        - wrote tests for coverage of the 'init_headlines_seen' param.
+        - make some of the logic a bit easier to read the first time through
+        - Added Carp as a prerequsiste
+        - fixed 013_legacy.t to skip if File::Temp isn't isntalled
+        - perlcritic updates
+            - use carp instead of warn for errors (not for debug)
+            - moved all the pod to after __END__
+            - three argument open
+            - use constant DEFAULT_DELAY for the default delay between fetches (3600)
+            - no shifting of @_, unpack all args at once (except for accessors)
+            - return statments on each sub
+            - changed any double quoted string that didn't need to be interpolated to
+              a single quoted string.
+        - migrated code from CVS to git.  added .gitignore file to repository
+
 2.212    11/06/2006
 	- fix META.yml generation by upgrading to ExtUtils::MakeMaker 6.31
         - add examples directory with an example (part deux)
@@ -26,7 +52,7 @@ Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
 2.04
         - Just added a use Perl; journals sub class example
-          XML::RSS::Headline::UsePerlJournals, which
+          XML::RSS::Headline::UsePerlJournals
 
 2.03
         - Needed to use URI::Escape qw(uri_unescape) on 

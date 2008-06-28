@@ -3,17 +3,36 @@ use strict;
 use warnings;
 use base qw(XML::RSS::Headline);
 
+our $VERSION = 2.3;
+
+sub item {
+    my ($self,$item) = @_;
+    $self->SUPER::item($item); # set url and description
+
+    my $key = 'http://jobs.perl.org/rss/';
+
+    my $name     = $item->{$key}{company_name}     || '';
+    my $location = $item->{$key}{location}         || 'Unknown Location';
+    my $hours    = $item->{$key}{hours}            || 'Unknown Hours';
+    my $terms    = $item->{$key}{employment_terms} || 'Unknown Terms';
+
+    my $name_location = $name ? $name . ' - ' . $location : $location;
+    $self->headline("$item->{title}\n$name_location\n$hours, $terms");
+
+    return;
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 XML::RSS::Headline::PerlJobs - XML::RSS::Headline Example Subclass
 
 =head1 VERSION
 
-2.2
-
-=cut
-
-our $VERSION = 2.2;
+2.3
 
 =head1 SYNOPSIS
 
@@ -51,22 +70,6 @@ these modules)
 =head2 $headline->item( $item )
 
 Init the object for a parsed RSS item returned by L<XML::RSS>.
-
-=cut 
-
-sub item {
-    my ($self,$item) = @_;
-    $self->SUPER::item($item); # set url and description
-
-    my $key = 'http://jobs.perl.org/rss/';
-    my $name     = $item->{$key}{company_name}     || "";
-    my $location = $item->{$key}{location}         || "Unknown Location";
-    my $hours    = $item->{$key}{hours}            || "Unknown Hours";
-    my $terms    = $item->{$key}{employment_terms} || "Unknown Terms";
-
-    my $name_location = $name ? $name . " - " . $location : $location;
-    $self->headline("$item->{title}\n$name_location\n$hours, $terms");
-}
 
 =head1 AUTHOR
 
@@ -125,6 +128,3 @@ under the same terms as Perl itself.
 
 L<XML::RSS::Feed>, L<XML::RSS::Headline>, L<XML::RSS::Headline::Fark>, L<XML::RSS::Headline::UsePerlJournals>, L<POE::Component::RSSAggregator>
 
-=cut
-
-1;
