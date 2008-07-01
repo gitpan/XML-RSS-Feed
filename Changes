@@ -1,6 +1,29 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
-2.3      06/26/208
+2.31     06/30/2008
+        - update README from pod
+        - remainder of perlcritic changes
+            - init local var in slurp
+                -  my $xml = do { local $/, <$fh> };
+                +  my $xml = do { local $/ = undef, <$fh> };
+            - implictly use decode_entities from HTML::Entities
+                - use HTML::Entities;
+                + use HTML::Entities qw(decode_entities);
+            - use character classes and break up log compiled regexes into chunks
+
+                -    my $stripit = qr/
+                -        http\:\/\/
+                -        go\.fark\.com\/
+                -        cgi\/fark\/go\.pl\?
+                -        IDLink\=\d+\&
+                -        location\=
+                -    /x;
+
+                +    my $domain = qr{ http [:] [/] [/] go [.] fark [.] com }x;
+                +    my $uri    = qr{ [/] cgi [/] fark [/] go [.] pl }x;
+                +    my $args   = qr{ [?] IDLink [=] \d+ [&] location [=] }x;
+
+2.3      06/26/2008
         - new constructor param "init_headlines_seen" so you can fetch a feed,
           mark everything as seen, then only get updates after the fact.
           Thanks to Carl Fürstenberg for suggesting.

@@ -4,7 +4,7 @@ use warnings;
 use base qw(XML::RSS::Headline);
 use URI::Escape qw(uri_unescape);
 
-our $VERSION = 2.3;
+our $VERSION = 2.31;
 
 sub item {
     my ( $self, $item ) = @_;
@@ -14,16 +14,12 @@ sub item {
     $headline =~ s/\[.+?\]\s+//;
     $self->headline($headline);
 
-    my $url     = $self->url;
-    my $stripit = qr/
-        http\:\/\/
-        go\.fark\.com\/
-        cgi\/fark\/go\.pl\?
-        IDLink\=\d+\&
-        location\=
-    /x;
+    my $domain = qr{ http [:] [/] [/] go [.] fark [.] com }x;
+    my $uri    = qr{ [/] cgi [/] fark [/] go [.] pl }x;
+    my $args   = qr{ [?] IDLink [=] \d+ [&] location [=] }x;
 
-    $url =~ s/$stripit//;
+    my $url = $self->url;
+    $url =~ s/$domain$uri$args//;
     $self->url( uri_unescape($url) );
 
     return;
@@ -39,7 +35,7 @@ XML::RSS::Headline::Fark - XML::RSS::Headline Example Subclass
 
 =head1 VERSION
 
-2.3
+2.31
 
 =head1 SYNOPSIS
 

@@ -5,13 +5,13 @@ use Digest::MD5 qw(md5_base64);
 use Encode qw(encode_utf8);
 use URI;
 use Time::HiRes;
-use HTML::Entities;
+use HTML::Entities qw(decode_entities);
 use Carp qw(carp);
 
 # length of headline when from description
 use constant DESCRIPTION_HEADLINE => 45;
 
-our $VERSION = 2.3;
+our $VERSION = 2.31;
 
 sub new {
     my ( $class, %args ) = @_;
@@ -186,7 +186,7 @@ XML::RSS::Headline - Persistant XML RSS Encapsulation
 
 =head1 VERSION
 
-2.3
+2.31
 
 =head1 SYNOPSIS
 

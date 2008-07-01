@@ -9,7 +9,7 @@ use Carp qw(carp);
 
 use constant DEFAULT_DELAY => 3600;
 
-our $VERSION = 2.3;
+our $VERSION = 2.31;
 
 sub new {
     my ( $class, %args ) = @_;
@@ -49,7 +49,7 @@ sub _load_cached_headlines {
     }
     elsif ( -T $filename_xml ) {    # legacy XML caching
         if ( open( my $fh, '<', $filename_xml ) ) {
-            my $xml = do { local $/, <$fh> };
+            my $xml = do { local $/ = undef, <$fh> };
             close $fh;
             warn "[$self->{name}] Loaded Cached RSS XML\n" if $self->{debug};
             $self->{process_count}++;
@@ -201,7 +201,7 @@ sub cache {
     my ($self) = @_;
     return unless $self->tmpdir;
     if ( -d $self->tmpdir && $self->num_headlines ) {
-        my $tmp_filename = $self->tmpdir . '/' . $self->{name} . ".sto";
+        my $tmp_filename = $self->tmpdir . '/' . $self->{name} . '.sto';
         eval { store( $self->_build_dump_structure, $tmp_filename ) };
         if ($@) {
             carp "[$self->{name}] Could not cache RSS XML to $tmp_filename\n";
@@ -349,7 +349,7 @@ XML::RSS::Feed - Persistant XML RSS Encapsulation
 
 =head1 VERSION
 
-2.3
+2.31
 
 =head1 SYNOPSIS
 

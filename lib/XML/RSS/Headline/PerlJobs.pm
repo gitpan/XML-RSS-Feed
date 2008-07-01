@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use base qw(XML::RSS::Headline);
 
-our $VERSION = 2.3;
+our $VERSION = 2.31;
 
 sub item {
     my ($self,$item) = @_;
@@ -32,7 +32,7 @@ XML::RSS::Headline::PerlJobs - XML::RSS::Headline Example Subclass
 
 =head1 VERSION
 
-2.3
+2.31
 
 =head1 SYNOPSIS
 
