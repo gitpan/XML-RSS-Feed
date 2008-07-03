@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                XML-RSS-Feed
-version:             2.31
+version:             2.32
 abstract:            Persistant XML RSS Encapsulation
 license:             perl
 author:              
@@ -17,6 +17,7 @@ requires:
     Test::More:                    0
     Time::HiRes:                   0
     URI:                           0
+    URI::Escape:                   0
     XML::RSS:                      0
 meta-spec:
     url:     http://module-build.sourceforge.net/META-spec-v1.3.html

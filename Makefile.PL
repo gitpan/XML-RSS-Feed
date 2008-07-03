@@ -19,6 +19,7 @@ WriteMakefile(
         'Encode'         => 0,
         'HTML::Entities' => 0,
         'Carp'           => 0,
+        'URI::Escape'    => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'XML-RSS-Feed-*' },

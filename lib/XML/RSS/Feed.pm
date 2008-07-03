@@ -9,7 +9,7 @@ use Carp qw(carp);
 
 use constant DEFAULT_DELAY => 3600;
 
-our $VERSION = 2.31;
+our $VERSION = 2.32;
 
 sub new {
     my ( $class, %args ) = @_;
@@ -349,7 +349,7 @@ XML::RSS::Feed - Persistant XML RSS Encapsulation
 
 =head1 VERSION
 
-2.31
+2.32
 
 =head1 SYNOPSIS
 

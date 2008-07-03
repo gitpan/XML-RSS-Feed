@@ -4,7 +4,7 @@ use warnings;
 use base qw(XML::RSS::Headline);
 use URI::Escape qw(uri_unescape);
 
-our $VERSION = 2.31;
+our $VERSION = 2.32;
 
 sub item {
     my ( $self, $item ) = @_;
@@ -35,7 +35,7 @@ XML::RSS::Headline::Fark - XML::RSS::Headline Example Subclass
 
 =head1 VERSION
 
-2.31
+2.32
 
 =head1 SYNOPSIS
 

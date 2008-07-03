@@ -11,7 +11,7 @@ use Carp qw(carp);
 # length of headline when from description
 use constant DESCRIPTION_HEADLINE => 45;
 
-our $VERSION = 2.31;
+our $VERSION = 2.32;
 
 sub new {
     my ( $class, %args ) = @_;
@@ -186,7 +186,7 @@ XML::RSS::Headline - Persistant XML RSS Encapsulation
 
 =head1 VERSION
 
-2.31
+2.32
 
 =head1 SYNOPSIS
 
