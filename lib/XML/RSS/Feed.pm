@@ -9,7 +9,7 @@ use Carp qw(carp);
 
 use constant DEFAULT_DELAY => 3600;
 
-our $VERSION = 2.32;
+our $VERSION = 2.4;
 
 sub new {
     my ( $class, %args ) = @_;
@@ -228,6 +228,7 @@ sub _build_dump_structure {
             url         => $headline->url,
             description => $headline->description,
             first_seen  => $headline->first_seen_hires,
+            guid        => $headline->guid,
         };
     }
     return $cached;
@@ -343,13 +344,17 @@ sub failed_to_parse {
 
 __END__
 
+
+
 =head1 NAME
+
+=encoding utf-8
 
 XML::RSS::Feed - Persistant XML RSS Encapsulation
 
 =head1 VERSION
 
-2.32
+2.4
 
 =head1 SYNOPSIS
 

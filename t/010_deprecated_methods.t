@@ -11,8 +11,9 @@ my $feed = XML::RSS::Feed->new(
 );
 isa_ok( $feed, 'XML::RSS::Feed' );
 
-cmp_ok( $feed->failed_to_fetch, 'eq', "",
-    "Verify that failed_to_fetch returns ''" );
-cmp_ok( $feed->failed_to_parse, 'eq', "",
-    "Verify that failed_to_parse returns ''" );
+{
+    local $SIG{'__WARN__'} = sub {};
+    cmp_ok( $feed->failed_to_fetch, 'eq', "", "Verify that failed_to_fetch returns ''" );
+    cmp_ok( $feed->failed_to_parse, 'eq', "", "Verify that failed_to_parse returns ''" );
+}
 

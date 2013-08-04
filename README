@@ -2,7 +2,7 @@ NAME
     XML::RSS::Feed - Persistant XML RSS Encapsulation
 
 VERSION
-    2.32
+    2.4
 
 SYNOPSIS
     A quick and dirty non-POE example that uses a blocking sleep. The magic
@@ -261,11 +261,11 @@ ACKNOWLEDGEMENTS
     reports. Guys thanks for actually taking time to use the code and give
     good, honest feedback.
 
-    Thank for to Carl Fürstenberg for providing feedback for new
-    constructor param of 'init_headlines_seen' so you won't get flooded with
-    headlines on the first fetch of the feed.
+    Thank for to Carl Furstenberg for providing feedback for new constructor
+    param of 'init_headlines_seen' so you won't get flooded with headlines
+    on the first fetch of the feed.
 
-    Thanks to Slaven Rezić for pointing out that t/008_store_retrieve.t
+    Thanks to Slaven Rezic for pointing out that t/008_store_retrieve.t
     pointed to broken rss tests on jbisbee.com (that I don't own anymore)
 
     Thanks to Aaron Krowne for patch for XML::RSS::Headline to use guid as

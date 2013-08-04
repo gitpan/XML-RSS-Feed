@@ -1,5 +1,15 @@
 Revision history for Perl module XML::RSS::Feed / XML::RSS::Headline
 
+2.4      8/4/2013
+        - add =encoding utf-8 to pod to fix RT issue #78918
+        - add guid to serialization so we can properly restore it
+          to fix RT issue #50467
+        - Fix blantantly broken test
+        - Suppress warnings on deprecated methods during tests
+        - Fix pod coverage issues with Feed::Factory
+        - I wrote this code so long ago it makes me throw up in my mouth 
+              just a little bit :P
+
 2.32     6/30/2008
         - add URI::Escape as a prereq. 
 
